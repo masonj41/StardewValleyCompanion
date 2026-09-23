@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Stardew Guide">
+  <title>Stardew Valley Master Companion</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: radial-gradient(circle at 50% 10%, #fdf6e2 0%, #ecd098 100%);
+      color: #3b2111;
+      min-height: 100vh;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .stardew-font {
+      font-family: 'Cinzel', serif;
+    }
+    .wood-box {
+      background: linear-gradient(180deg, #bb7c44 0%, #a4642f 100%);
+      border: 3px solid #5a2c0c;
+      box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.35), 
+                  inset 0 -2px 3px rgba(0, 0, 0, 0.4), 
+                  0 4px 10px rgba(70, 35, 10, 0.2);
+      border-radius: 14px;
+    }
+    .wood-card {
+      background: #fedc97;
+      border: 3px solid #8e4f1f;
+      box-shadow: 0 4px 10px rgba(90, 44, 12, 0.15);
+      border-radius: 16px;
+    }
+    .badge-love { background-color: #e11d48; color: #fff; }
+    .badge-like { background-color: #059669; color: #fff; }
+    .badge-neutral { background-color: #64748b; color: #fff; }
+    .badge-dislike { background-color: #ea580c; color: #fff; }
+    .badge-hate { background-color: #334155; color: #fff; }
+
+    select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%235a2c0c' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.65rem center;
+      background-repeat: no-repeat;
+      background-size: 1.1em 1.1em;
+      padding-right: 2rem;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    /* Modal Backdrop Transitions */
+    .catalog-modal {
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    .catalog-modal.hidden-modal {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .catalog-modal.visible-modal {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body class="p-3 sm:p-5 lg:p-6 pb-20">
+
+  <header id="top-nav" class="sticky top-2 z-50 max-w-4xl mx-auto mb-3 hidden">
+    <div class="wood-box px-3 py-2 flex items-center justify-between shadow-lg">
+      <button 
+        onclick="window.showGridView()" 
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#4e2206] hover:bg-[#381602] active:scale-95 text-amber-100 rounded-lg text-xs font-black shadow border border-amber-600/40 cursor-pointer"
+      >
+        <span>←</span> <span>Villagers</span>
+      </button>
+      <div class="flex items-center gap-2">
+        <span id="nav-villager-title" class="stardew-font text-xs sm:text-sm font-bold text-amber-200 truncate ml-2"></span>
+        <button 
+          id="nav-catalog-btn"
+          onclick="window.openRobinCatalog()" 
+          class="hidden px-2.5 py-1 bg-amber-600 hover:bg-amber-500 text-amber-950 font-black text-[11px] rounded-lg shadow cursor-pointer border border-amber-400"
+        >
+          🔨 Catalog
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto">
+
+    <div id="grid-view" class="transition-opacity duration-200">
+      
+      <!-- Top Header Card -->
+      <div class="wood-card p-4 sm:p-5 mb-4 text-center">
+        <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+          <div class="text-left">
+            <h1 class="stardew-font text-xl sm:text-2xl text-amber-950 font-black">
+              Pelican Town Directory
+            </h1>
+            <p class="text-xs sm:text-sm text-amber-900/80 font-medium">
+              Complete guide for all 34 residents • Schedules, gift tiers & shop hours
+            </p>
+          </div>
+          <button 
+            onclick="window.openRobinCatalog()" 
+            class="px-3 py-2 bg-[#5a2c0c] hover:bg-[#431f06] active:scale-95 text-amber-100 rounded-xl text-xs font-black shadow border border-amber-600/50 flex items-center gap-1.5 cursor-pointer ml-auto"
+          >
+            <span>🔨</span> <span>Robin's Upgrades</span>
+          </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mt-3 relative">
+          <input 
+            type="text" 
+            id="villager-search" 
+            oninput="window.filterDirectory()"
+            placeholder="Search villagers by name or loved gift (e.g., Robin, Melon, Diamond)..."
+            class="w-full p-2.5 pl-9 rounded-xl border-2 border-amber-900/30 bg-amber-50/90 text-amber-950 font-bold text-xs sm:text-sm placeholder-amber-900/50 shadow-inner focus:outline-none focus:border-amber-800"
+          >
+          <span class="absolute left-3 top-2.5 text-amber-900/60 text-sm">🔍</span>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="flex flex-wrap gap-1.5 mt-3 justify-center text-xs">
+          <button onclick="window.setCategoryFilter('all')" class="cat-pill px-2.5 py-1 rounded-lg font-black bg-[#5a2c0c] text-white shadow-sm" data-cat="all">All (34)</button>
+          <button onclick="window.setCategoryFilter('bachelor')" class="cat-pill px-2.5 py-1 rounded-lg font-bold bg-amber-200/90 text-amber-950" data-cat="bachelor">Bachelors (6)</button>
+          <button onclick="window.setCategoryFilter('bachelorette')" class="cat-pill px-2.5 py-1 rounded-lg font-bold bg-amber-200/90 text-amber-950" data-cat="bachelorette">Bachelorettes (6)</button>
+          <button onclick="window.setCategoryFilter('townsfolk')" class="cat-pill px-2.5 py-1 rounded-lg font-bold bg-amber-200/90 text-amber-950" data-cat="townsfolk">Townsfolk (22)</button>
+          <button onclick="window.setCategoryFilter('shop')" class="cat-pill px-2.5 py-1 rounded-lg font-bold bg-amber-200/90 text-amber-950" data-cat="shop">🏪 Shopkeepers (11)</button>
+        </div>
+      </div>
+
+      <!-- 3-Column Villager Grid -->
+      <div id="villager-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4"></div>
+
+    </div>
+
+    <div id="detail-view" class="hidden transition-opacity duration-200">
+      
+      <!-- Profile Header Card -->
+      <div class="wood-card p-4 sm:p-5 mb-4">
+        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+          
+          <div class="relative shrink-0">
+            <img 
+              id="detail-portrait" 
+              src="" 
+              alt="Portrait" 
+              class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl border-3 border-amber-950/70 object-cover bg-amber-100 shadow"
+              onerror="this.onerror=null; this.src='https://placehold.co/130x130/8e4f1f/fedc97?text=Villager'"
+            >
+            <span id="detail-tag" class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow whitespace-nowrap"></span>
+          </div>
+
+          <div class="flex-1 text-center sm:text-left">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b-2 border-amber-900/15 pb-2">
+              <h2 id="detail-name" class="stardew-font text-2xl text-amber-950 font-black"></h2>
+              <div class="inline-flex items-center justify-center gap-1 bg-amber-950/10 px-3 py-1 rounded-lg">
+                <span class="text-sm">🎂</span>
+                <span id="detail-birthday" class="font-black text-amber-950 text-xs sm:text-sm"></span>
+              </div>
+            </div>
+            
+            <p id="detail-desc" class="text-amber-950/85 mt-2 text-xs sm:text-sm leading-relaxed font-medium"></p>
+            <div id="detail-tags" class="mt-2.5 flex flex-wrap gap-1.5 justify-center sm:justify-start"></div>
+
+            <!-- Robin Catalog Quick Action inside Robin's Profile -->
+            <div id="robin-catalog-shortcut" class="mt-3 hidden">
+              <button 
+                onclick="window.openRobinCatalog()" 
+                class="w-full sm:w-auto px-4 py-2 bg-[#5a2c0c] hover:bg-[#431f06] active:scale-95 text-amber-100 rounded-xl text-xs font-black shadow border border-amber-600/50 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>🔨</span> <span>View Carpentry & Farm Upgrade Catalog</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Shop Hours Card (Conditional) -->
+      <div id="shop-hours-card" class="wood-card p-4 sm:p-5 mb-4 hidden">
+        <div class="flex items-center justify-between border-b-2 border-amber-900/15 pb-2 mb-2">
+          <h3 class="stardew-font text-base sm:text-lg text-amber-950 font-black flex items-center gap-1.5">
+            <span>🏪 Shop & Service Hours</span>
+          </h3>
+          <span class="text-xs px-2 py-0.5 rounded bg-emerald-700 text-white font-black">Local Business</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="bg-amber-100/80 p-2.5 rounded-xl border border-amber-900/20">
+            <span class="font-black text-amber-950 block">Operating Hours:</span>
+            <span id="shop-hours-time" class="text-amber-900 font-bold"></span>
+          </div>
+          <div class="bg-amber-100/80 p-2.5 rounded-xl border border-amber-900/20">
+            <span class="font-black text-amber-950 block">Business Schedule:</span>
+            <span id="shop-hours-days" class="text-amber-900 font-bold"></span>
+          </div>
+        </div>
+        <div id="shop-hours-note" class="mt-2 text-[11px] text-amber-900/80 font-medium italic"></div>
+      </div>
+
+      <!-- Schedule Tracker Card -->
+      <div class="wood-card p-4 sm:p-5 mb-4">
+        <div class="border-b-2 border-amber-900/15 pb-2.5 mb-3 flex items-center justify-between">
+          <div>
+            <h3 class="stardew-font text-base sm:text-lg text-amber-950 font-black flex items-center gap-1.5">
+              <span>📍 Live Schedule Tracker</span>
+            </h3>
+            <p class="text-[11px] text-amber-900/75">Calculates exact canon positions by season, day, and weather</p>
+          </div>
+          <span class="text-xl">🧭</span>
+        </div>
+
+        <!-- Schedule Inputs -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+          <div>
+            <label class="block text-[10px] font-black uppercase tracking-wider text-amber-950 mb-1">Season</label>
+            <select id="schedule-season" onchange="window.updateScheduleResult()" class="w-full p-2 rounded-lg border-2 border-amber-900/30 bg-amber-50 text-amber-950 font-bold text-xs">
+              <option value="Spring">🌸 Spring</option>
+              <option value="Summer">☀️ Summer</option>
+              <option value="Fall">🍂 Fall</option>
+              <option value="Winter">❄️ Winter</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-black uppercase tracking-wider text-amber-950 mb-1">Day of Week</label>
+            <select id="schedule-day" onchange="window.updateScheduleResult()" class="w-full p-2 rounded-lg border-2 border-amber-900/30 bg-amber-50 text-amber-950 font-bold text-xs">
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+              <option value="Saturday">Saturday</option>
+              <option value="Sunday">Sunday</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-black uppercase tracking-wider text-amber-950 mb-1">Weather</label>
+            <select id="schedule-weather" onchange="window.updateScheduleResult()" class="w-full p-2 rounded-lg border-2 border-amber-900/30 bg-amber-50 text-amber-950 font-bold text-xs">
+              <option value="Sunny">☀️ Sunny / Dry</option>
+              <option value="Rainy">🌧️ Raining</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-black uppercase tracking-wider text-amber-950 mb-1">Time of Day</label>
+            <select id="schedule-time" onchange="window.updateScheduleResult()" class="w-full p-2 rounded-lg border-2 border-amber-900/30 bg-amber-50 text-amber-950 font-bold text-xs">
+              <option value="600">6:00 AM</option>
+              <option value="700">7:00 AM</option>
+              <option value="800">8:00 AM</option>
+              <option value="900">9:00 AM</option>
+              <option value="1000">10:00 AM</option>
+              <option value="1100">11:00 AM</option>
+              <option value="1200">12:00 PM (Noon)</option>
+              <option value="1300">1:00 PM</option>
+              <option value="1400">2:00 PM</option>
+              <option value="1500">3:00 PM</option>
+              <option value="1600">4:00 PM</option>
+              <option value="1700">5:00 PM</option>
+              <option value="1800">6:00 PM</option>
+              <option value="1900">7:00 PM</option>
+              <option value="2000">8:00 PM</option>
+              <option value="2100">9:00 PM</option>
+              <option value="2200">10:00 PM</option>
+              <option value="2300">11:00 PM</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Current Location Display -->
+        <div class="wood-box p-3.5 sm:p-4 rounded-xl text-amber-50 mb-3">
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-100/20 border border-amber-200/40 flex items-center justify-center text-xl shrink-0 shadow-inner">
+              📍
+            </div>
+            <div class="flex-1">
+              <div class="flex flex-wrap items-center justify-between gap-1">
+                <span class="text-[10px] uppercase tracking-wider text-amber-200 font-black">Location at Selected Time</span>
+                <span id="schedule-routine-tag" class="text-[10px] bg-black/40 px-2 py-0.5 rounded text-amber-200 font-bold border border-amber-400/20"></span>
+              </div>
+              <div id="schedule-location" class="text-sm sm:text-base font-black text-amber-50 mt-0.5"></div>
+              <div id="schedule-activity" class="text-xs text-amber-200/90 mt-0.5 italic font-medium"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Day Routine -->
+        <div>
+          <h4 class="text-[11px] font-black uppercase tracking-wider text-amber-950 mb-1.5">
+            Full Routine Timeline:
+          </h4>
+          <div id="schedule-timeline" class="space-y-1.5 text-xs max-h-56 overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+
+      <!-- Gift Preferences Card -->
+      <div class="wood-card p-4 sm:p-5 mb-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-amber-900/15 pb-2.5 mb-3">
+          <div>
+            <h3 class="stardew-font text-base sm:text-lg text-amber-950 font-black flex items-center gap-1.5">
+              <span>🎁 Gift Preferences</span>
+            </h3>
+            <p class="text-[11px] text-amber-900/75">Quality multipliers: Silver (+10%), Gold (+25%), Iridium (+50%)</p>
+          </div>
+
+          <!-- Tier Quick Filters -->
+          <div class="flex flex-wrap gap-1">
+            <button onclick="window.filterGifts('all')" class="gift-filter-btn px-2 py-0.5 text-xs rounded font-black bg-[#5a2c0c] text-white shadow-sm" data-tier="all">All</button>
+            <button onclick="window.filterGifts('Love')" class="gift-filter-btn px-2 py-0.5 text-xs rounded font-bold bg-rose-200 text-rose-950" data-tier="Love">Loved (+80)</button>
+            <button onclick="window.filterGifts('Like')" class="gift-filter-btn px-2 py-0.5 text-xs rounded font-bold bg-emerald-200 text-emerald-950" data-tier="Like">Liked (+45)</button>
+            <button onclick="window.filterGifts('Dislike')" class="gift-filter-btn px-2 py-0.5 text-xs rounded font-bold bg-orange-200 text-orange-950" data-tier="Dislike">Disliked (-20)</button>
+            <button onclick="window.filterGifts('Hate')" class="gift-filter-btn px-2 py-0.5 text-xs rounded font-bold bg-stone-300 text-stone-900" data-tier="Hate">Hated (-40)</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border-2 border-amber-900/30">
+          <table class="w-full text-left text-xs sm:text-sm">
+            <thead class="bg-amber-900/20 text-amber-950 font-black border-b-2 border-amber-900/30 uppercase text-[10px] tracking-wider">
+              <tr>
+                <th class="p-2 sm:p-2.5">Tier</th>
+                <th class="p-2 sm:p-2.5">Item Name & Details</th>
+                <th class="p-2 sm:p-2.5 text-center">Base</th>
+                <th class="p-2 sm:p-2.5 text-center hidden sm:table-cell">Silver</th>
+                <th class="p-2 sm:p-2.5 text-center hidden sm:table-cell">Gold</th>
+                <th class="p-2 sm:p-2.5 text-center">Iridium</th>
+                <th class="p-2 sm:p-2.5 text-center">Birthday</th>
+              </tr>
+            </thead>
+            <tbody id="gift-table-body" class="divide-y divide-amber-900/10 bg-amber-50/70 font-medium"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bottom Return Button -->
+      <button 
+        onclick="window.showGridView()" 
+        class="w-full py-3 rounded-xl font-black bg-[#5a2c0c] hover:bg-[#431f06] active:scale-98 text-amber-100 shadow transition-all border border-amber-600/40 text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer"
+      >
+        <span>← Return to All Villagers</span>
+      </button>
+
+    </div>
+
+  </main>
+
+  <div id="robin-catalog-modal" class="catalog-modal hidden-modal fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+    <div class="wood-card w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl border-4 border-amber-950 overflow-hidden">
+      
+      <!-- Catalog Header -->
+      <div class="wood-box p-3.5 sm:p-4 rounded-t-xl text-amber-50 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2.5">
+          <span class="text-2xl">🔨</span>
+          <div>
+            <h2 class="stardew-font text-base sm:text-lg font-black text-amber-100">Robin's Carpentry & Upgrades</h2>
+            <p class="text-[11px] text-amber-200/80">Carpenter's Shop • Open 9am-5pm (Closed Tuesdays)</p>
+          </div>
+        </div>
+        <button 
+          onclick="window.closeRobinCatalog()" 
+          class="w-8 h-8 rounded-full bg-amber-950/60 hover:bg-amber-950 text-amber-100 flex items-center justify-center font-black text-sm cursor-pointer border border-amber-400/30"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Catalog Category Filter Pills -->
+      <div class="bg-amber-200/80 px-3 py-2 flex flex-wrap gap-1.5 border-b border-amber-900/20 shrink-0 text-xs">
+        <button onclick="window.filterCatalog('all')" class="catalog-pill px-2.5 py-1 rounded-lg font-black bg-[#5a2c0c] text-white" data-cat="all">All Items</button>
+        <button onclick="window.filterCatalog('barn_coop')" class="catalog-pill px-2.5 py-1 rounded-lg font-bold bg-amber-100 text-amber-950" data-cat="barn_coop">Barns & Coops</button>
+        <button onclick="window.filterCatalog('farm')" class="catalog-pill px-2.5 py-1 rounded-lg font-bold bg-amber-100 text-amber-950" data-cat="farm">Farm Buildings</button>
+        <button onclick="window.filterCatalog('house')" class="catalog-pill px-2.5 py-1 rounded-lg font-bold bg-amber-100 text-amber-950" data-cat="house">House Upgrades</button>
+        <button onclick="window.filterCatalog('town')" class="catalog-pill px-2.5 py-1 rounded-lg font-bold bg-amber-100 text-amber-950" data-cat="town">Community Projects</button>
+      </div>
+
+      <!-- Catalog Scrollable List -->
+      <div id="catalog-list" class="p-3 sm:p-4 overflow-y-auto space-y-3 bg-[#fff9ea]/80 divide-y divide-amber-900/10"></div>
+
+      <!-- Catalog Footer -->
+      <div class="p-3 bg-amber-200/80 border-t border-amber-900/20 text-center shrink-0">
+        <button 
+          onclick="window.closeRobinCatalog()" 
+          class="w-full py-2 bg-[#5a2c0c] hover:bg-[#431f06] text-amber-100 font-bold rounded-xl text-xs"
+        >
+          Close Catalog
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const ROBIN_CATALOG = [
+      {
+        id: "coop_1",
+        name: "Standard Coop",
+        category: "barn_coop",
+        icon: "🐔",
+        cost: "4,000g",
+        materials: "300 Wood, 100 Stone",
+        buildTime: "3 days (2 days in 1.6+)",
+        perks: "Houses up to 4 chickens. Produces eggs daily.",
+        footprint: "6x3 tiles"
+      },
+      {
+        id: "coop_2",
+        name: "Big Coop",
+        category: "barn_coop",
+        icon: "🦆",
+        cost: "10,000g",
+        materials: "400 Wood, 150 Stone",
+        buildTime: "2 days",
+        perks: "Houses up to 8 animals. Unlocks Ducks and adds an Incubator for hatching eggs.",
+        footprint: "Requires Standard Coop"
+      },
+      {
+        id: "coop_3",
+        name: "Deluxe Coop",
+        category: "barn_coop",
+        icon: "🐇",
+        cost: "20,000g",
+        materials: "500 Wood, 200 Stone",
+        buildTime: "2 days",
+        perks: "Houses up to 12 animals. Unlocks Rabbits and installs the automated Hay feeder system.",
+        footprint: "Requires Big Coop"
+      },
+      {
+        id: "barn_1",
+        name: "Standard Barn",
+        category: "barn_coop",
+        icon: "🐄",
+        cost: "6,000g",
+        materials: "350 Wood, 150 Stone",
+        buildTime: "3 days",
+        perks: "Houses up to 4 cows. Produces milk daily.",
+        footprint: "7x4 tiles"
+      },
+      {
+        id: "barn_2",
+        name: "Big Barn",
+        category: "barn_coop",
+        icon: "🐐",
+        cost: "12,000g",
+        materials: "450 Wood, 200 Stone",
+        buildTime: "2 days",
+        perks: "Houses up to 8 animals. Unlocks Goats and allows animals to give birth.",
+        footprint: "Requires Standard Barn"
+      },
+      {
+        id: "barn_3",
+        name: "Deluxe Barn",
+        category: "barn_coop",
+        icon: "🐖",
+        cost: "25,000g",
+        materials: "550 Wood, 300 Stone",
+        buildTime: "2 days",
+        perks: "Houses up to 12 animals. Unlocks Sheep & Pigs (Truffles!) and automated hay feeder.",
+        footprint: "Requires Big Barn"
+      },
+      {
+        id: "silo",
+        name: "Silo",
+        category: "farm",
+        icon: "🌾",
+        cost: "100g",
+        materials: "100 Stone, 10 Clay, 5 Copper Bar",
+        buildTime: "2 days",
+        perks: "Stores up to 240 Hay gathered from cutting grass with a Scythe.",
+        footprint: "3x3 tiles"
+      },
+      {
+        id: "shed_1",
+        name: "Standard Shed",
+        category: "farm",
+        icon: "🏚️",
+        cost: "15,000g",
+        materials: "300 Wood",
+        buildTime: "2 days",
+        perks: "Empty indoor space (holds 67 Kegs/Jars inside on a 7x3 footprint).",
+        footprint: "7x3 tiles"
+      },
+      {
+        id: "shed_2",
+        name: "Big Shed",
+        category: "farm",
+        icon: "🏭",
+        cost: "20,000g",
+        materials: "550 Wood, 300 Stone",
+        buildTime: "2 days",
+        perks: "Doubles the internal room size (holds 137 Kegs/Jars inside without increasing farm footprint!).",
+        footprint: "Requires Standard Shed"
+      },
+      {
+        id: "fish_pond",
+        name: "Fish Pond",
+        category: "farm",
+        icon: "🐟",
+        cost: "5,000g",
+        materials: "200 Stone, 5 Seaweed, 5 Green Algae",
+        buildTime: "2 days",
+        perks: "Breed fish and harvest Fish Roe (or Sturgeon Roe for Caviar in Preserves Jars).",
+        footprint: "5x5 tiles"
+      },
+      {
+        id: "stable",
+        name: "Stable",
+        category: "farm",
+        icon: "🐎",
+        cost: "10,000g",
+        materials: "100 Hardwood, 5 Iron Bar",
+        buildTime: "2 days",
+        perks: "Includes your personal Horse for +30% faster travel speed.",
+        footprint: "4x2 tiles"
+      },
+      {
+        id: "well",
+        name: "Well",
+        category: "farm",
+        icon: "💧",
+        cost: "1,000g",
+        materials: "75 Stone",
+        buildTime: "2 days",
+        perks: "Convenient water source for refilling your watering can anywhere on the farm.",
+        footprint: "3x3 tiles"
+      },
+      {
+        id: "mill",
+        name: "Mill",
+        category: "farm",
+        icon: "⚙️",
+        cost: "2,500g",
+        materials: "50 Wood, 150 Stone, 4 Cloth",
+        buildTime: "2 days",
+        perks: "Minds Wheat into Flour, Beets into Sugar, and Unmilled Rice into Rice.",
+        footprint: "4x2 tiles"
+      },
+      {
+        id: "slime_hutch",
+        name: "Slime Hutch",
+        category: "farm",
+        icon: "🧪",
+        cost: "10,000g",
+        materials: "500 Stone, 10 Refined Quartz, 1 Iridium Bar",
+        buildTime: "2 days",
+        perks: "Raise up to 20 slimes to harvest Slime Balls and petrified slime.",
+        footprint: "7x4 (11x6 in 1.6: 7x4 tiles)"
+      },
+      {
+        id: "house_1",
+        name: "Farmhouse Upgrade 1 (Kitchen)",
+        category: "house",
+        icon: "🍳",
+        cost: "10,000g",
+        materials: "450 Wood",
+        buildTime: "3 days",
+        perks: "Adds a Kitchen with a stove & fridge for cooking recipes, plus a double bed for marriage.",
+        footprint: "Expands main farmhouse"
+      },
+      {
+        id: "house_2",
+        name: "Farmhouse Upgrade 2 (Nursery)",
+        category: "house",
+        icon: "🛏️",
+        cost: "50,000g",
+        materials: "150 Hardwood",
+        buildTime: "3 days",
+        perks: "Adds a nursery with a crib and two single beds for children, plus expands the living area.",
+        footprint: "Requires House Upgrade 1"
+      },
+      {
+        id: "house_3",
+        name: "Farmhouse Upgrade 3 (Cellar & Casks)",
+        category: "house",
+        icon: "🍷",
+        cost: "100,000g",
+        materials: "None (Gold only)",
+        buildTime: "3 days",
+        perks: "Adds a cellar with 33 Casks to age Wine and Cheese up to Iridium quality for 2x sell price.",
+        footprint: "Requires House Upgrade 2"
+      },
+      {
+        id: "pam_house",
+        name: "Community Upgrade (Pam & Penny's House)",
+        category: "town",
+        icon: "🏡",
+        cost: "500,000g",
+        materials: "950 Wood",
+        buildTime: "3 days",
+        perks: "Replaces Pam and Penny's trailer in town with a beautiful permanent home.",
+        footprint: "Unlocked after completing Community Center"
+      },
+      {
+        id: "town_shortcuts",
+        name: "Town Shortcuts",
+        category: "town",
+        icon: "🪜",
+        cost: "300,000g",
+        materials: "None (Gold only)",
+        buildTime: "Instant",
+        perks: "Robin builds stairways and bridges connecting the beach, museum, mountains, and forest.",
+        footprint: "Requires Pam's House completed"
+      }
+    ];
+
+    const VILLAGERS = {
+      // ===== BACHELORETTES =====
+      penny: {
+        id: "penny",
+        name: "Penny",
+        category: "bachelorette",
+        role: "Bachelorette",
+        tagColor: "bg-pink-600",
+        birthday: "Fall 2",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/a/ab/Penny.png",
+        description: "Penny lives in the trailer near the river with Pam. She tutors Jas and Vincent at the Museum library and dreams of a warm, peaceful home.",
+        tags: ["Tutor", "Bookworm", "Kind Heart", "Hates Alcohol"],
+        gifts: [
+          { item: "Poppy", reaction: "Love", note: "Summer flower (she is the ONLY villager who loves it!)" },
+          { item: "Melon", reaction: "Love", note: "Summer crop" },
+          { item: "Poppyseed Muffin", reaction: "Love", note: "Cooked pastry (Poppy + Flour + Sugar)" },
+          { item: "Diamond & Emerald", reaction: "Love", note: "Mined gems" },
+          { item: "Red Plate & Roots Platter", reaction: "Love", note: "Cooked dishes" },
+          { item: "Sandfish", reaction: "Love", note: "Caught in Calico Desert" },
+          { item: "Tom Kha Soup", reaction: "Love", note: "Cooked recipe" },
+          { item: "All Books", reaction: "Love", note: "Reading books (1.6+)" },
+          { item: "Dandelion & Leek", reaction: "Like", note: "Spring wild forage" },
+          { item: "All Milk", reaction: "Like", note: "Dairy products" },
+          { item: "All Artifacts", reaction: "Like", note: "Museum items" },
+          { item: "Daffodil", reaction: "Neutral", note: "Spring flower" },
+          { item: "Duck Feather & Wool", reaction: "Dislike", note: "Animal produce" },
+          { item: "Quartz & Purple Mushroom", reaction: "Dislike", note: "Cave items" },
+          { item: "Rabbit's Foot", reaction: "Hate", note: "HATES this! (The ONLY villager who hates Rabbit's Foot)" },
+          { item: "All Alcohol (Beer, Wine, Pale Ale, Mead)", reaction: "Hate", note: "Trauma from Pam's drinking" },
+          { item: "Grape, Holly, Hops", reaction: "Hate", note: "Brewing items" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (weather === 'Rainy') {
+            return {
+              routine: "Rainy Day (Inside Trailer)",
+              timeline: [
+                { time: 600, location: "The Trailer (Bedroom)", activity: "Sleeping / waking up" },
+                { time: 900, location: "The Trailer (Bedroom)", activity: "Reading in her bedroom" },
+                { time: 1100, location: "The Trailer (Kitchen)", activity: "Prepping food in kitchen" },
+                { time: 1300, location: "The Trailer (Sink)", activity: "Washing dishes at the sink" },
+                { time: 1500, location: "The Trailer (Living Room)", activity: "Watching TV" },
+                { time: 1800, location: "The Trailer (Bedroom)", activity: "Reading by bookshelf" },
+                { time: 2100, location: "The Trailer (Bedroom)", activity: "Heading to bed" }
+              ]
+            };
+          }
+          if (day === 'Tuesday' || day === 'Wednesday' || day === 'Friday') {
+            return {
+              routine: "Tutoring Jas & Vincent at Museum",
+              timeline: [
+                { time: 600, location: "The Trailer", activity: "Waking up and preparing lesson books" },
+                { time: 900, location: "Walking to Museum", activity: "Walking through town" },
+                { time: 1000, location: "Museum / Library", activity: "Tutoring Jas and Vincent" },
+                { time: 1400, location: "Town Square (Near Ice Cream Stand)", activity: "Watching children play" },
+                { time: 1620, location: "Outside 1 Willow Lane", activity: "Walking Vincent home" },
+                { time: 1750, location: "Marnie's Ranch", activity: "Walking Jas home" },
+                { time: 1830, location: "Walking to Trailer", activity: "Returning to Pelican Town" },
+                { time: 2000, location: "The Trailer", activity: "Relaxing at home" },
+                { time: 2100, location: "The Trailer (Bedroom)", activity: "Sleeping" }
+              ]
+            };
+          }
+          if (day === 'Saturday') {
+            return {
+              routine: "Town Playground with Children",
+              timeline: [
+                { time: 600, location: "The Trailer", activity: "Waking up" },
+                { time: 1000, location: "Pelican Town Playground", activity: "Watching children on swings" },
+                { time: 1200, location: "Bridge near Stardrop Saloon", activity: "Resting near bridge" },
+                { time: 1700, location: "Outside 1 Willow Lane", activity: "Walking Vincent home" },
+                { time: 1830, location: "Marnie's Ranch", activity: "Walking Jas home" },
+                { time: 2100, location: "The Trailer", activity: "Going to bed" }
+              ]
+            };
+          }
+          return {
+            routine: "Graveyard Reading & Saloon Bench",
+            timeline: [
+              { time: 600, location: "The Trailer", activity: "Waking up" },
+              { time: 800, location: "Pelican Town Graveyard", activity: "Sitting under big tree reading" },
+              { time: 1230, location: "The Trailer (Sink)", activity: "Washing dishes at sink" },
+              { time: 1600, location: "Bench outside Stardrop Saloon", activity: "Chatting with Maru" },
+              { time: 1840, location: "The Trailer", activity: "Heading indoors" },
+              { time: 2100, location: "The Trailer (Bedroom)", activity: "Sleeping" }
+            ]
+          };
+        }
+      },
+
+      abigail: {
+        id: "abigail",
+        name: "Abigail",
+        category: "bachelorette",
+        role: "Bachelorette",
+        tagColor: "bg-purple-600",
+        birthday: "Fall 13",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/8/88/Abigail.png",
+        description: "Lives at Pierre's General Store. She plays the flute, loves gaming and exploring the graveyard, and is known to 'eat' Amethysts.",
+        tags: ["Adventurous", "Flute", "Gamer", "Eats Amethyst"],
+        gifts: [
+          { item: "Amethyst", reaction: "Love", note: "Her signature gem ('How did you know I was hungry?')" },
+          { item: "Chocolate Cake", reaction: "Love", note: "Cooked dessert" },
+          { item: "Blackberry Cobbler", reaction: "Love", note: "Cooked pastry" },
+          { item: "Spicy Eel", reaction: "Love", note: "Mined / drop dish (+Luck & Speed)" },
+          { item: "Pufferfish", reaction: "Love", note: "Summer ocean catch (12pm - 4pm)" },
+          { item: "Pumpkin", reaction: "Love", note: "Fall crop" },
+          { item: "Quartz", reaction: "Like", note: "Cave mineral" },
+          { item: "All Gems", reaction: "Like", note: "Emerald, Ruby, Jade, Topaz" },
+          { item: "Sugar & Wild Horseradish", reaction: "Dislike", note: "Raw baking & forage" },
+          { item: "Clay", reaction: "Hate", note: "Raw dirt" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (weather === 'Rainy') {
+            return {
+              routine: "Rainy Day (Mines or Saloon)",
+              timeline: [
+                { time: 600, location: "Pierre's Store (Bedroom)", activity: "Waking up in bedroom" },
+                { time: 1100, location: "Pierre's Store (Kitchen)", activity: "In the kitchen" },
+                { time: 1300, location: "Pierre's Store (Living Room)", activity: "Playing video games" },
+                { time: 1700, location: "The Stardrop Saloon", activity: "Playing Journey of the Prairie King" },
+                { time: 2100, location: "Pierre's Store", activity: "Returns home to sleep" }
+              ]
+            };
+          }
+          if (day === 'Sunday') {
+            return {
+              routine: "Sunday Wizard Tower Path",
+              timeline: [
+                { time: 600, location: "Pierre's Store", activity: "Waking up" },
+                { time: 1300, location: "Cindersap Forest", activity: "Standing near Wizard's Tower" },
+                { time: 2000, location: "Pierre's Store", activity: "Returns home to sleep" }
+              ]
+            };
+          }
+          return {
+            routine: "Graveyard & Town Square",
+            timeline: [
+              { time: 600, location: "Pierre's Store", activity: "In her bedroom" },
+              { time: 1300, location: "Pelican Town Graveyard", activity: "Visiting Mona's grave" },
+              { time: 1630, location: "Pierre's Store", activity: "Practicing flute in room" },
+              { time: 2000, location: "Pierre's Store", activity: "Relaxing at home" }
+            ]
+          };
+        }
+      },
+
+      emily: {
+        id: "emily",
+        name: "Emily",
+        category: "bachelorette",
+        role: "Bachelorette",
+        tagColor: "bg-sky-600",
+        birthday: "Spring 27",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/2/28/Emily.png",
+        description: "Lives at 2 Willow Lane with her sister Haley. Works evenings at the Stardrop Saloon and loves tailoring, crystals, and meditation.",
+        tags: ["Tailor", "Saloon Waitress", "Crystals", "Sewing Machine"],
+        gifts: [
+          { item: "Amethyst, Aquamarine, Emerald, Jade, Ruby, Topaz", reaction: "Love", note: "ALL standard mined gems!" },
+          { item: "Cloth & Wool", reaction: "Love", note: "Tailoring supplies" },
+          { item: "Survival Burger", reaction: "Love", note: "Cooked forage meal" },
+          { item: "Daffodil", reaction: "Like", note: "Spring flower" },
+          { item: "Quartz", reaction: "Like", note: "Mined mineral" },
+          { item: "Fried Eel & Ice Cream", reaction: "Dislike", note: "Specific meals" },
+          { item: "Fish Taco & Salmonberry", reaction: "Hate", note: "Dislikes cheap berry and fish taco" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Saloon Evening Work Shift",
+            timeline: [
+              { time: 600, location: "2 Willow Lane (Bedroom)", activity: "Waking up and sewing" },
+              { time: 1200, location: "2 Willow Lane (Living Room)", activity: "Living room with Haley" },
+              { time: 1530, location: "Walking to Saloon", activity: "Walking to town center" },
+              { time: 1600, location: "The Stardrop Saloon", activity: "Working behind bar counter" },
+              { time: 2400, location: "2 Willow Lane", activity: "Returns home to sleep" }
+            ]
+          };
+        }
+      },
+
+      haley: {
+        id: "haley",
+        name: "Haley",
+        category: "bachelorette",
+        role: "Bachelorette",
+        tagColor: "bg-yellow-500",
+        birthday: "Spring 14",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/1/1b/Haley.png",
+        description: "Emily's sister. She has a passion for photography and fashion. Initial vanity gives way to genuine sweetness as your friendship deepens.",
+        tags: ["Photographer", "Fashion", "Hates Prismatic Shard"],
+        gifts: [
+          { item: "Sunflower", reaction: "Love", note: "Summer / Fall flower" },
+          { item: "Pink Cake", reaction: "Love", note: "Cooked pastry (Melon + Wheat Flour + Sugar + Egg)" },
+          { item: "Fruit Salad", reaction: "Love", note: "Summer recipe" },
+          { item: "Coconut", reaction: "Love", note: "Calico Desert forage" },
+          { item: "Daffodil", reaction: "Like", note: "Spring wild flower" },
+          { item: "All Milk & Eggs", reaction: "Dislike", note: "Animal produce" },
+          { item: "All Fish", reaction: "Hate", note: "Grossed out by seafood" },
+          { item: "Prismatic Shard", reaction: "Hate", note: "HATES this! (Only villager who hates Prismatic Shards)" },
+          { item: "Clay", reaction: "Hate", note: "Raw dirt" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (weather === 'Rainy') {
+            return {
+              routine: "Rainy Day (Inside House)",
+              timeline: [
+                { time: 600, location: "2 Willow Lane", activity: "In her bedroom" },
+                { time: 1100, location: "2 Willow Lane (Living Room)", activity: "Sitting in living room" },
+                { time: 1900, location: "2 Willow Lane (Bedroom)", activity: "Reading fashion magazines in bed" }
+              ]
+            };
+          }
+          return {
+            routine: "Fountain & River Photography",
+            timeline: [
+              { time: 600, location: "2 Willow Lane", activity: "Waking up" },
+              { time: 1100, location: "Pelican Town Fountain", activity: "Standing near town fountain" },
+              { time: 1630, location: "2 Willow Lane", activity: "Returns home to cook/relax" },
+              { time: 2200, location: "2 Willow Lane (Bedroom)", activity: "Sleeping" }
+            ]
+          };
+        }
+      },
+
+      leah: {
+        id: "leah",
+        name: "Leah",
+        category: "bachelorette",
+        role: "Bachelorette",
+        tagColor: "bg-amber-600",
+        birthday: "Winter 23",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/e/e6/Leah.png",
+        description: "An artist who lives in a rustic cottage in Cindersap Forest. She loves wood sculpting, nature walks, and foraging wild food.",
+        tags: ["Sculptor", "Forager", "Forest Cottage", "Nature Lover"],
+        gifts: [
+          { item: "Salad", reaction: "Love", note: "Gus sells at Saloon for 220g (Easiest loved gift!)" },
+          { item: "Goat Cheese", reaction: "Love", note: "Artisan dairy" },
+          { item: "Wine", reaction: "Love", note: "Artisan keg beverage" },
+          { item: "Truffle", reaction: "Love", note: "Pig forage item" },
+          { item: "Poppyseed Muffin", reaction: "Love", note: "Cooked pastry" },
+          { item: "All Foraged Mushrooms & Berries", reaction: "Like", note: "Dandelion, Blackberry, Hazelnut" },
+          { item: "Driftwood", reaction: "Like", note: "Sculpting material! (Likes fishing trash)" },
+          { item: "All Milk & Eggs", reaction: "Neutral", note: "Farm staples" },
+          { item: "Bread & Hashbrowns", reaction: "Dislike", note: "Processed carb dishes" },
+          { item: "Pizza & Pancakes", reaction: "Hate", note: "Greasy fast foods" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (weather === 'Rainy') {
+            return {
+              routine: "Rainy Day (Cottage Sculpting)",
+              timeline: [
+                { time: 600, location: "Leah's Cottage", activity: "Working on sculpture" },
+                { time: 1600, location: "The Stardrop Saloon", activity: "Having a drink at saloon" },
+                { time: 2300, location: "Leah's Cottage", activity: "Asleep in cottage" }
+              ]
+            };
+          }
+          return {
+            routine: "Forest Walks & River Sketching",
+            timeline: [
+              { time: 600, location: "Leah's Cottage", activity: "Waking up & sculpting" },
+              { time: 1200, location: "River south of Cottage", activity: "Drawing along forest river" },
+              { time: 1500, location: "Pier near pond", activity: "Looking across forest water" },
+              { time: 1830, location: "Leah's Cottage", activity: "Inside cottage reading" }
+            ]
+          };
+        }
+      },
+
+      maru: {
+        id: "maru",
+        name: "Maru",
+        category: "bachelorette",
+        role: "Bachelorette",
+        tagColor: "bg-teal-600",
+        birthday: "Summer 10",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/f/f8/Maru.png",
+        description: "Daughter of Demetrius and Robin. Works part-time as a nurse at Harvey's Clinic and spends her free time building gadgets and stargazing.",
+        tags: ["Inventor", "Nurse", "Stargazer", "Robotics"],
+        gifts: [
+          { item: "Battery Pack", reaction: "Love", note: "Harvested from Lightning Rods" },
+          { item: "Diamond, Gold Bar, Iridium Bar", reaction: "Love", note: "Precious metals for machinery" },
+          { item: "Cauliflower & Rhubarb Pie", reaction: "Love", note: "Spring crop & dessert" },
+          { item: "Radioactive Bar", reaction: "Love", note: "High-tech smelting" },
+          { item: "Copper Bar & Iron Bar", reaction: "Like", note: "Smelted metals" },
+          { item: "Quartz", reaction: "Like", note: "Mined mineral" },
+          { item: "Pickles", reaction: "Hate", note: "Hates pickled food" },
+          { item: "Snow Yam & Honey", reaction: "Hate", note: "Dislikes winter forage & sweet honey" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (day === 'Tuesday' || day === 'Thursday') {
+            return {
+              routine: "Working at Harvey's Clinic",
+              timeline: [
+                { time: 600, location: "Carpenter's Shop", activity: "Waking up" },
+                { time: 800, location: "Walking to Town", activity: "Walking to clinic" },
+                { time: 900, location: "Harvey's Clinic", activity: "Front desk nurse duties" },
+                { time: 1600, location: "Town Square", activity: "Walking home to Mountain" },
+                { time: 1900, location: "Carpenter's Shop", activity: "Tinkering with gadgets in room" }
+              ]
+            };
+          }
+          return {
+            routine: "Mountain Stargazing & Workshop",
+            timeline: [
+              { time: 600, location: "Carpenter's Shop", activity: "In her bedroom workshop" },
+              { time: 1000, location: "Carpenter's Shop Deck", activity: "Looking through telescope" },
+              { time: 1600, location: "Bench outside Saloon", activity: "Chatting with Penny" },
+              { time: 2000, location: "Carpenter's Shop", activity: "Home for the evening" }
+            ]
+          };
+        }
+      },
+
+      // ===== BACHELORS =====
+      alex: {
+        id: "alex",
+        name: "Alex",
+        category: "bachelor",
+        role: "Bachelor",
+        tagColor: "bg-green-600",
+        birthday: "Summer 13",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/0/04/Alex.png",
+        description: "Lives with his grandparents George and Evelyn. Dreams of becoming a professional gridball star and works out constantly with his dog Dusty.",
+        tags: ["Athlete", "Gridball", "Dusty's Dog", "Loves Protein"],
+        gifts: [
+          { item: "Complete Breakfast", reaction: "Love", note: "Cooked breakfast (+Max Energy)" },
+          { item: "Salmon Dinner", reaction: "Love", note: "Cooked seafood recipe" },
+          { item: "All Eggs", reaction: "Like", note: "High protein farm staple" },
+          { item: "Field Snack", reaction: "Like", note: "Crafted energy bar" },
+          { item: "Quartz", reaction: "Dislike", note: "Mined mineral" },
+          { item: "Wild Horseradish", reaction: "Dislike", note: "Spring forage" },
+          { item: "Holly", reaction: "Hate", note: "Winter toxic berry" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (weather === 'Rainy') {
+            return {
+              routine: "Rainy Day (Lifting Weights at Home)",
+              timeline: [
+                { time: 600, location: "1 River Road (Bedroom)", activity: "Lifting weights in room" },
+                { time: 1600, location: "1 River Road (Living Room)", activity: "Watching sports on TV" },
+                { time: 2100, location: "1 River Road (Bedroom)", activity: "Going to bed" }
+              ]
+            };
+          }
+          return {
+            routine: "Gridball Practice & Dog Pen",
+            timeline: [
+              { time: 600, location: "1 River Road", activity: "Morning workout" },
+              { time: 800, location: "Outside 1 River Road", activity: "Tending to dog Dusty" },
+              { time: 1300, location: "Town Square (Near Dog Pen)", activity: "Tossing gridball" },
+              { time: 1700, location: "1 River Road", activity: "Evening dinner with grandparents" }
+            ]
+          };
+        }
+      },
+
+      elliott: {
+        id: "elliott",
+        name: "Elliott",
+        category: "bachelor",
+        role: "Bachelor",
+        tagColor: "bg-red-700",
+        birthday: "Fall 5",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/b/bd/Elliott.png",
+        description: "A sentimental writer who lives in a secluded cabin on the beach. He speaks with poetic flair and seeks inspiration for his novel.",
+        tags: ["Writer", "Beach Cabin", "Poet", "Sophisticated"],
+        gifts: [
+          { item: "Lobster", reaction: "Love", note: "Ocean Crab Pot catch" },
+          { item: "Duck Feather", reaction: "Love", note: "Deluxe Coop produce" },
+          { item: "Pomegranate", reaction: "Love", note: "Fall fruit tree" },
+          { item: "Squid Ink", reaction: "Love", note: "Mined squid drop / Squid Pond" },
+          { item: "Tom Kha Soup", reaction: "Love", note: "Cooked soup" },
+          { item: "All Books", reaction: "Love", note: "Literature (1.6+)" },
+          { item: "All Fruit & Squid", reaction: "Like", note: "Apples, Peaches, Squid" },
+          { item: "Octopus & Sea Cucumber", reaction: "Dislike", note: "Dislikes slippery sea creatures" },
+          { item: "Quartz", reaction: "Neutral", note: "Minerals" },
+          { item: "Salmonberry & Amaranth", reaction: "Hate", note: "Wild berries & rough crops" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (weather === 'Rainy') {
+            return {
+              routine: "Rainy Day (Inside Beach Cabin)",
+              timeline: [
+                { time: 600, location: "Elliott's Cabin", activity: "Writing at his desk" },
+                { time: 1500, location: "The Stardrop Saloon", activity: "Sitting near fireplace" },
+                { time: 2300, location: "Elliott's Cabin", activity: "Returns home to sleep" }
+              ]
+            };
+          }
+          return {
+            routine: "Beach Walk & Bridge Gazing",
+            timeline: [
+              { time: 600, location: "Elliott's Cabin", activity: "Writing at typewriter" },
+              { time: 1200, location: "Beach Pier", activity: "Looking across the sea" },
+              { time: 1500, location: "Bridge south of Leah's", activity: "Staring into the river" },
+              { time: 1800, location: "Elliott's Cabin", activity: "Reading in his cabin" }
+            ]
+          };
+        }
+      },
+
+      harvey: {
+        id: "harvey",
+        name: "Harvey",
+        category: "bachelor",
+        role: "Bachelor & Shopkeeper",
+        tagColor: "bg-emerald-800",
+        birthday: "Winter 14",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/9/95/Harvey.png",
+        description: "The town doctor. Runs the local medical clinic above which he lives. Passionate about aviation, health advice, and ham radios.",
+        tags: ["Doctor", "Clinic", "Coffee Lover", "Aviation"],
+        shopHours: {
+          hours: "9:00 AM - 3:00 PM (Emergency care always on call)",
+          days: "Monday through Sunday (Checkups Tuesdays/Thursdays)",
+          note: "Sells Energy Tonic (1,000g) and Muscle Remedy (1,000g) at the front desk counter."
+        },
+        gifts: [
+          { item: "Coffee", reaction: "Love", note: "Gus sells at Saloon for 300g (Easy loved gift!)" },
+          { item: "Pickles", reaction: "Love", note: "Preserves Jar product (Any vegetable!)" },
+          { item: "Super Meal", reaction: "Love", note: "Cooked meal (+Speed)" },
+          { item: "Truffle Oil & Wine", reaction: "Love", note: "Artisan goods" },
+          { item: "All Spring/Wild Forage", reaction: "Like", note: "Dandelion, Wild Horseradish, Leek" },
+          { item: "Quartz & Duck Feather", reaction: "Like", note: "Mineral & feather" },
+          { item: "Cheese & Goat Cheese", reaction: "Dislike", note: "Dairy products" },
+          { item: "Salmonberry & Spice Berry", reaction: "Hate", note: "Wild seasonal berries" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (day === 'Tuesday' || day === 'Thursday') {
+            return {
+              routine: "Conducting Patient Checkups",
+              timeline: [
+                { time: 600, location: "Harvey's Clinic (Apartment)", activity: "Waking up & breakfast" },
+                { time: 830, location: "Harvey's Clinic", activity: "Examining town residents" },
+                { time: 1800, location: "Harvey's Apartment", activity: "Operating ham radio" },
+                { time: 2200, location: "Harvey's Apartment", activity: "Going to bed" }
+              ]
+            };
+          }
+          return {
+            routine: "Clinic Hours & Park Walks",
+            timeline: [
+              { time: 600, location: "Harvey's Clinic", activity: "Reviewing medical journals" },
+              { time: 900, location: "Harvey's Clinic Desk", activity: "Tending clinic counter" },
+              { time: 1500, location: "Pelican Town Park", activity: "Walking around park fountain" },
+              { time: 1730, location: "Harvey's Clinic", activity: "Returning upstairs" }
+            ]
+          };
+        }
+      },
+
+      sam: {
+        id: "sam",
+        name: "Sam",
+        category: "bachelor",
+        role: "Bachelor",
+        tagColor: "bg-blue-600",
+        birthday: "Summer 17",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/9/94/Sam.png",
+        description: "An energetic musician who plays guitar in a band with Sebastian. Lives at 1 Willow Lane with Jodi, Kent, and little brother Vincent.",
+        tags: ["Guitarist", "Skater", "Band", "Junk Food"],
+        gifts: [
+          { item: "Pizza", reaction: "Love", note: "Gus sells at Saloon for 600g" },
+          { item: "Cactus Fruit", reaction: "Love", note: "Calico Desert forage" },
+          { item: "Maple Bar", reaction: "Love", note: "Cooked pastry (Maple Syrup + Sugar + Wheat Flour)" },
+          { item: "Tigerseye", reaction: "Love", note: "Magma Geode mineral" },
+          { item: "All Eggs", reaction: "Like", note: "Farm eggs (except Void Egg)" },
+          { item: "Joja Cola", reaction: "Like", note: "Likes cheap soda!" },
+          { item: "All Foraged Mushrooms", reaction: "Dislike", note: "Earthy mushrooms" },
+          { item: "Coal & Copper Bar", reaction: "Dislike", note: "Mining materials" },
+          { item: "Mayonnaise", reaction: "Hate", note: "Dislikes mayonnaise" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (weather === 'Rainy') {
+            return {
+              routine: "Rainy Day (Practicing Guitar in Room)",
+              timeline: [
+                { time: 600, location: "1 Willow Lane (Bedroom)", activity: "Practicing guitar" },
+                { time: 1700, location: "The Stardrop Saloon", activity: "Playing arcade games with Sebastian" },
+                { time: 2200, location: "1 Willow Lane", activity: "Going to sleep" }
+              ]
+            };
+          }
+          return {
+            routine: "Skateboarding & Town Square",
+            timeline: [
+              { time: 600, location: "1 Willow Lane", activity: "Waking up" },
+              { time: 1000, location: "Outside 1 Willow Lane", activity: "Practicing kickflips on skateboard" },
+              { time: 1400, location: "Town Square (Near Lewis's house)", activity: "Hanging out near river" },
+              { time: 1800, location: "1 Willow Lane", activity: "Dinner with family" }
+            ]
+          };
+        }
+      },
+
+      sebastian: {
+        id: "sebastian",
+        name: "Sebastian",
+        category: "bachelor",
+        role: "Bachelor",
+        tagColor: "bg-slate-700",
+        birthday: "Winter 10",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/a/a8/Sebastian.png",
+        description: "Robin's son and Maru's half-brother. Works as a freelance programmer from his basement room. Loves motorcycles, rain, and board games.",
+        tags: ["Programmer", "Motorcycle", "Basement", "Board Games"],
+        gifts: [
+          { item: "Frozen Tear", reaction: "Love", note: "Mined in frozen levels (Floors 40-79)" },
+          { item: "Sashimi", reaction: "Love", note: "Cooked dish (Any single fish!) - Recipe from Linus at 3 hearts" },
+          { item: "Obsidian", reaction: "Love", note: "Magma Geode mineral" },
+          { item: "Void Egg", reaction: "Love", note: "Void Chicken produce" },
+          { item: "Flounder", reaction: "Like", note: "Ocean flatfish" },
+          { item: "Quartz", reaction: "Like", note: "Mined mineral" },
+          { item: "All Flowers", reaction: "Dislike", note: "Dislikes bouquets & wild blooms" },
+          { item: "All Mayonnaise", reaction: "Hate", note: "HATES mayonnaise" },
+          { item: "Clay", reaction: "Hate", note: "Raw dirt" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (weather === 'Rainy') {
+            return {
+              routine: "Rainy Day (Beach Boardwalk / Saloon)",
+              timeline: [
+                { time: 600, location: "Carpenter's Basement", activity: "Coding at computer" },
+                { time: 1030, location: "Pelican Town Beach", activity: "Walking in rain on boardwalk" },
+                { time: 1700, location: "The Stardrop Saloon", activity: "Playing pool with Sam" },
+                { time: 2200, location: "Carpenter's Basement", activity: "Sleeping" }
+              ]
+            };
+          }
+          return {
+            routine: "Late Night Mountain Smoker",
+            timeline: [
+              { time: 600, location: "Carpenter's Basement", activity: "Sleeping late" },
+              { time: 1500, location: "Carpenter's Basement Desk", activity: "Working on freelance coding" },
+              { time: 1830, location: "Mountain Lake (West shore)", activity: "Standing near water smoking" },
+              { time: 2130, location: "Carpenter's Basement", activity: "Late night computer games" }
+            ]
+          };
+        }
+      },
+
+      shane: {
+        id: "shane",
+        name: "Shane",
+        category: "bachelor",
+        role: "Bachelor",
+        tagColor: "bg-indigo-700",
+        birthday: "Spring 20",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/8/8b/Shane.png",
+        description: "Marnie's nephew. Works grueling shifts at JojaMart and spends nights at the Saloon. Overcoming personal struggles, he treasures blue chickens.",
+        tags: ["Blue Chickens", "Joja Clerk", "Saloon Regular", "Peppers"],
+        gifts: [
+          { item: "Beer", reaction: "Love", note: "Gus sells at Saloon for 400g" },
+          { item: "Pizza", reaction: "Love", note: "Gus sells at Saloon for 600g" },
+          { item: "Hot Pepper", reaction: "Love", note: "Summer crop (Super fast 5 day growth!)" },
+          { item: "Pepper Poppers", reaction: "Love", note: "Cooked dish (+Speed)" },
+          { item: "All Eggs", reaction: "Like", note: "Loves chickens and farm eggs" },
+          { item: "Quartz", reaction: "Dislike", note: "Mined mineral" },
+          { item: "Pickles", reaction: "Hate", note: "Pickled items" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "JojaMart Shift & Evening Saloon",
+            timeline: [
+              { time: 600, location: "Marnie's Ranch", activity: "Waking up" },
+              { time: 710, location: "Walking to JojaMart", activity: "Walking through town" },
+              { time: 900, location: "JojaMart", activity: "Stocking warehouse shelves" },
+              { time: 1700, location: "The Stardrop Saloon", activity: "Sitting at bar stool" },
+              { time: 2310, location: "Marnie's Ranch", activity: "Returning to bed" }
+            ]
+          };
+        }
+      },
+
+      // ===== NON-MARRIAGE TOWNSFOLK & SHOPKEEPERS =====
+      linus: {
+        id: "linus",
+        name: "Linus",
+        category: "townsfolk",
+        role: "Mountain Forager",
+        tagColor: "bg-amber-800",
+        birthday: "Winter 3",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/3/31/Linus.png",
+        description: "Lives in a tent on the Mountain above town. Lives in harmony with nature and respects all wild animals and foraged foods.",
+        tags: ["Mountain Tent", "Wild Forager", "Easiest Friend", "Loves Forage"],
+        gifts: [
+          { item: "Blueberry Tart", reaction: "Love", note: "Cooked pastry" },
+          { item: "Cactus Fruit & Coconut", reaction: "Love", note: "Desert foraged fruits" },
+          { item: "Dish O' The Sea", reaction: "Love", note: "Seafood dish (+Fishing)" },
+          { item: "Yam", reaction: "Love", note: "Fall crop" },
+          { item: "All Seasonal Forage", reaction: "Like", note: "Daffodil, Dandelion, Leek, Hazelnut" },
+          { item: "All Eggs & Fruit", reaction: "Like", note: "Farm staples" },
+          { item: "Trash & Slime", reaction: "Hate", note: "Pollution and refuse" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (weather === 'Rainy') {
+            return {
+              routine: "Rainy Day (Inside Tent)",
+              timeline: [
+                { time: 600, location: "Linus's Tent", activity: "Sheltering inside tent" },
+                { time: 930, location: "Bush west of Tent", activity: "Standing behind bush" },
+                { time: 1500, location: "Under tree west of Tent", activity: "Standing under tree" },
+                { time: 1900, location: "Linus's Tent", activity: "Inside tent for night" }
+              ]
+            };
+          }
+          return {
+            routine: "Mountain Lake & Campfire",
+            timeline: [
+              { time: 600, location: "Linus's Tent", activity: "Waking up" },
+              { time: 700, location: "Campfire in front of Tent", activity: "Warming by campfire" },
+              { time: 930, location: "Mountain Lake (West shore)", activity: "Looking at lake water" },
+              { time: 1400, location: "Campfire in front of Tent", activity: "Cooking by fire" },
+              { time: 1900, location: "Linus's Tent", activity: "Retires inside tent" }
+            ]
+          };
+        }
+      },
+
+      willy: {
+        id: "willy",
+        name: "Willy",
+        category: "townsfolk",
+        role: "Fisherman & Shopkeeper",
+        tagColor: "bg-blue-700",
+        birthday: "Summer 24",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/8/82/Willy.png",
+        description: "The seasoned fisherman on the beach pier. Sells rods, bait, and tackle, and repairs the boat to Ginger Island.",
+        tags: ["Fish Shop", "Beach Pier", "Angler", "Ginger Island Boat"],
+        shopHours: {
+          hours: "9:00 AM - 5:00 PM",
+          days: "Every day except Saturday (Shop closed on sunny Saturdays for fishing trip!)",
+          note: "Sells rods, bait, crab pots, and spinners. Buys fresh fish and ocean forage for gold."
+        },
+        gifts: [
+          { item: "Catfish & Octopus", reaction: "Love", note: "Challenging fish catches" },
+          { item: "Diamond & Iridium Bar", reaction: "Love", note: "Precious metals and gems" },
+          { item: "Mead", reaction: "Love", note: "Artisan keg drink from Honey" },
+          { item: "Sea Cucumber & Sturgeon", reaction: "Love", note: "Ocean & lake catches" },
+          { item: "Pumpkin", reaction: "Love", note: "Fall crop" },
+          { item: "Lingcod & Tiger Trout", reaction: "Like", note: "River fish" },
+          { item: "Quartz", reaction: "Like", note: "Cave mineral" },
+          { item: "All Cooking (Except Fish)", reaction: "Dislike", note: "Dislikes non-fish recipes" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (day === 'Saturday' && weather !== 'Rainy') {
+            return {
+              routine: "Saturday Fishing Trip (Fish Shop CLOSED)",
+              timeline: [
+                { time: 610, location: "Walking to Forest", activity: "Heading to Cindersap Forest" },
+                { time: 800, location: "Cindersap Forest River", activity: "Fishing south of Leah's" },
+                { time: 1400, location: "Pelican Town River", activity: "Fishing by town river" },
+                { time: 1900, location: "The Stardrop Saloon", activity: "Relaxing at saloon" },
+                { time: 2300, location: "Fish Shop (Beach)", activity: "Returns to bed" }
+              ]
+            };
+          }
+          return {
+            routine: "Fish Shop Open (9am - 5pm)",
+            timeline: [
+              { time: 610, location: "Beach Pier", activity: "Morning fishing outside shop" },
+              { time: 900, location: "Fish Shop Counter", activity: "Open for business at counter" },
+              { time: 1700, location: "Beach Pier", activity: "Evening ocean fishing" },
+              { time: 2200, location: "Fish Shop Bedroom", activity: "Sleeping" }
+            ]
+          };
+        }
+      },
+
+      robin: {
+        id: "robin",
+        name: "Robin",
+        category: "townsfolk",
+        role: "Carpenter & Shopkeeper",
+        tagColor: "bg-emerald-700",
+        birthday: "Fall 21",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/1/1b/Robin.png",
+        description: "The town carpenter at 24 Mountain Road. Builds coops, barns, farm expansions, and sells timber and furniture.",
+        tags: ["Carpenter's Shop", "Builder", "Mountain House", "Aerobics Club"],
+        shopHours: {
+          hours: "9:00 AM - 5:00 PM (Closes at 4:00 PM on Friday for Saloon)",
+          days: "Wednesday through Monday (CLOSED on Tuesdays for Pierre's exercise class)",
+          note: "Robin builds and upgrades all farm buildings, expands your farmhouse, and sells wood/stone."
+        },
+        gifts: [
+          { item: "Goat Cheese", reaction: "Love", note: "Artisan dairy" },
+          { item: "Peach", reaction: "Love", note: "Summer tree fruit" },
+          { item: "Spaghetti", reaction: "Love", note: "Gus sells at Saloon for 240g (Super cheap loved gift!)" },
+          { item: "Hardwood", reaction: "Like", note: "Carpentry material" },
+          { item: "Quartz", reaction: "Like", note: "Mined mineral" },
+          { item: "Mayonnaise & Coffee", reaction: "Like", note: "High friendship items" },
+          { item: "Stone & Clay", reaction: "Hate", note: "Raw debris" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (day === 'Tuesday') {
+            return {
+              routine: "Tuesday Aerobics Class (Shop CLOSED)",
+              timeline: [
+                { time: 600, location: "Carpenter's Shop", activity: "Getting ready" },
+                { time: 930, location: "Walking to Town", activity: "Walking to Pierre's Store" },
+                { time: 1300, location: "Pierre's Aerobics Room", activity: "Exercise session with group" },
+                { time: 1800, location: "Walking to Mountain", activity: "Walking home" },
+                { time: 2100, location: "Carpenter's Shop", activity: "Going to bed" }
+              ]
+            };
+          }
+          if (day === 'Friday') {
+            return {
+              routine: "Friday Saloon Night (Closes 4:00 PM)",
+              timeline: [
+                { time: 600, location: "Carpenter's Shop", activity: "Waking up" },
+                { time: 900, location: "Carpenter's Shop Counter", activity: "Shop open for business" },
+                { time: 1600, location: "Walking to Saloon", activity: "Walking to town with Demetrius" },
+                { time: 1920, location: "The Stardrop Saloon", activity: "Dancing with Demetrius by jukebox" },
+                { time: 2240, location: "Carpenter's Shop", activity: "Arrives home" }
+              ]
+            };
+          }
+          return {
+            routine: "Regular Carpentry Hours (9am - 5pm)",
+            timeline: [
+              { time: 600, location: "Carpenter's Shop", activity: "In bedroom waking up" },
+              { time: 900, location: "Carpenter's Shop Counter", activity: "Behind counter (Open for business!)" },
+              { time: 1700, location: "Mountain Lake Area", activity: "Walking near mountain trail" },
+              { time: 2100, location: "Carpenter's Shop", activity: "Going to bed" }
+            ]
+          };
+        }
+      },
+
+      pierre: {
+        id: "pierre",
+        name: "Pierre",
+        category: "townsfolk",
+        role: "Shopkeeper",
+        tagColor: "bg-amber-700",
+        birthday: "Spring 26",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/c/c2/Pierre.png",
+        description: "Owner of Pierre's General Store. Sells seasonal crop seeds, fertilizers, and backpack upgrades.",
+        tags: ["General Store", "Seeds", "Backpack Upgrade", "Rivalry with Joja"],
+        shopHours: {
+          hours: "9:00 AM - 5:00 PM",
+          days: "Thursday through Tuesday (CLOSED Wednesdays until Community Center is completed; then open 7 days!)",
+          note: "Sells seasonal seeds, fruit tree saplings, cooking ingredients, and the 24/36 slot backpacks."
+        },
+        gifts: [
+          { item: "Fried Calamari", reaction: "Love", note: "Cooked dish (Squid + Wheat Flour + Oil)" },
+          { item: "All Milk & Eggs", reaction: "Like", note: "Farm staples" },
+          { item: "Daffodil & Dandelion", reaction: "Like", note: "Spring flowers" },
+          { item: "All Fish", reaction: "Dislike", note: "Raw seafood" },
+          { item: "All Gems", reaction: "Dislike", note: "Dislikes mined stones" },
+          { item: "Quartz", reaction: "Hate", note: "HATES regular Quartz!" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (day === 'Wednesday') {
+            return {
+              routine: "Wednesday Rest Day (Shop Closed)",
+              timeline: [
+                { time: 600, location: "Pierre's General Store", activity: "Inside living quarters" },
+                { time: 1300, location: "Pierre's Store Hall", activity: "Relaxing around the store" },
+                { time: 1800, location: "The Stardrop Saloon", activity: "Socializing at saloon" },
+                { time: 2200, location: "Pierre's General Store", activity: "Sleeping" }
+              ]
+            };
+          }
+          return {
+            routine: "Behind General Store Register",
+            timeline: [
+              { time: 600, location: "Pierre's Store", activity: "Waking up" },
+              { time: 900, location: "General Store Register", activity: "Open for seed sales!" },
+              { time: 1700, location: "Pierre's Living Room", activity: "Stocking inventory" },
+              { time: 2200, location: "Pierre's Bedroom", activity: "Going to bed" }
+            ]
+          };
+        }
+      },
+
+      clint: {
+        id: "clint",
+        name: "Clint",
+        category: "townsfolk",
+        role: "Blacksmith & Shopkeeper",
+        tagColor: "bg-stone-700",
+        birthday: "Winter 26",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/3/31/Clint.png",
+        description: "The town blacksmith. Upgrades your tools, cracks geodes, sells copper/iron/coal, and harbors a shy crush on Emily.",
+        tags: ["Blacksmith", "Tool Upgrades", "Cracks Geodes", "Sells Coal"],
+        shopHours: {
+          hours: "9:00 AM - 4:00 PM",
+          days: "Every day (Closed Fridays once Community Center is completed for Boiler Room repairs)",
+          note: "Cracks geodes for 25g, upgrades Copper/Steel/Gold/Iridium tools, and sells basic ores & coal."
+        },
+        gifts: [
+          { item: "Amethyst, Aquamarine, Emerald, Jade, Ruby, Topaz", reaction: "Love", note: "ALL standard mined gems!" },
+          { item: "Gold Bar & Iridium Bar", reaction: "Love", note: "Precious forged ingots" },
+          { item: "Artichoke Dip & Fiddlehead Risotto", reaction: "Love", note: "Cooked dishes" },
+          { item: "Copper Bar & Iron Bar", reaction: "Like", note: "Metals" },
+          { item: "Quartz", reaction: "Like", note: "Mined mineral" },
+          { item: "All Flowers", reaction: "Dislike", note: "Dislikes bouquets" },
+          { item: "Copper Ore & Iron Ore", reaction: "Hate", note: "Unrefined raw dirt/ore" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Blacksmith Forge & Evening Saloon",
+            timeline: [
+              { time: 600, location: "Blacksmith Shop", activity: "Waking up" },
+              { time: 900, location: "Blacksmith Counter", activity: "Tending anvil and counter (Open!)" },
+              { time: 1700, location: "The Stardrop Saloon", activity: "Sitting in corner watching Emily" },
+              { time: 2400, location: "Blacksmith Bedroom", activity: "Going to bed" }
+            ]
+          };
+        }
+      },
+
+      gus: {
+        id: "gus",
+        name: "Gus",
+        category: "townsfolk",
+        role: "Saloon Chef & Shopkeeper",
+        tagColor: "bg-red-800",
+        birthday: "Summer 8",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/5/52/Gus.png",
+        description: "Owner and head chef of The Stardrop Saloon. A generous soul who serves food, drinks, and plays host to the whole community.",
+        tags: ["Saloon Owner", "Master Chef", "Generous", "Jukebox"],
+        shopHours: {
+          hours: "12:00 PM (Noon) - 12:00 AM Midnight",
+          days: "Open 7 Days a week",
+          note: "Sells Coffee (300g), Pizza, Beer, Salads, daily special recipes, and jukebox music."
+        },
+        gifts: [
+          { item: "Diamond", reaction: "Love", note: "Mined gem" },
+          { item: "Orange", reaction: "Love", note: "Summer tree fruit" },
+          { item: "Fish Taco", reaction: "Love", note: "Cooked meal (Tuna + Tortilla + Red Cabbage + Mayo)" },
+          { item: "Tropical Curry", reaction: "Love", note: "Ginger Island dish" },
+          { item: "Daffodil", reaction: "Like", note: "Spring flower" },
+          { item: "Quartz", reaction: "Like", note: "Mineral" },
+          { item: "Coleslaw", reaction: "Hate", note: "Hates coleslaw" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Operating The Stardrop Saloon",
+            timeline: [
+              { time: 600, location: "Saloon Kitchen", activity: "Prepping food ingredients" },
+              { time: 1200, location: "Saloon Bar Counter", activity: "Behind counter (Saloon open!)" },
+              { time: 2400, location: "Saloon Bedroom", activity: "Locks up saloon and sleeps" }
+            ]
+          };
+        }
+      },
+
+      marnie: {
+        id: "marnie",
+        name: "Marnie",
+        category: "townsfolk",
+        role: "Rancher & Shopkeeper",
+        tagColor: "bg-amber-600",
+        birthday: "Fall 18",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/5/52/Marnie.png",
+        description: "Runs Marnie's Ranch in Cindersap Forest. Sells livestock, hay, milk pails, and shears. Shares a secret romance with Mayor Lewis.",
+        tags: ["Livestock", "Hay", "Lewis's Secret", "Animal Lover"],
+        shopHours: {
+          hours: "9:00 AM - 4:00 PM",
+          days: "Wednesday through Sunday (CLOSED Monday & Tuesday)",
+          note: "Sells Chickens, Cows, Ducks, Goats, Sheep, Pigs, Rabbits, Hay, and Auto-Grabbers."
+        },
+        gifts: [
+          { item: "Diamond", reaction: "Love", note: "Mined gem" },
+          { item: "Farmer's Lunch", reaction: "Love", note: "Cooked meal (+Farming)" },
+          { item: "Pink Cake", reaction: "Love", note: "Cooked dessert" },
+          { item: "Pumpkin Pie", reaction: "Love", note: "Cooked holiday dish" },
+          { item: "All Eggs & Milk", reaction: "Like", note: "Farm staples" },
+          { item: "Quartz", reaction: "Like", note: "Cave mineral" },
+          { item: "Clay", reaction: "Hate", note: "Raw dirt" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (day === 'Monday') {
+            return {
+              routine: "Monday Errand Day (Shop CLOSED)",
+              timeline: [
+                { time: 600, location: "Marnie's Ranch", activity: "Waking up" },
+                { time: 1000, location: "General Store", activity: "Shopping at Pierre's Store" },
+                { time: 1400, location: "Town Square", activity: "Walking around town" },
+                { time: 1900, location: "Marnie's Ranch", activity: "Returns home to sleep" }
+              ]
+            };
+          }
+          if (day === 'Tuesday') {
+            return {
+              routine: "Tuesday Aerobics Class (Shop CLOSED)",
+              timeline: [
+                { time: 600, location: "Marnie's Ranch", activity: "Waking up" },
+                { time: 1100, location: "Pierre's Aerobics Room", activity: "Aerobics workout session" },
+                { time: 1800, location: "The Stardrop Saloon", activity: "Having dinner with Lewis" },
+                { time: 2200, location: "Marnie's Ranch", activity: "Going to bed" }
+              ]
+            };
+          }
+          return {
+            routine: "Marnie's Ranch Counter (Open 9am - 4pm)",
+            timeline: [
+              { time: 600, location: "Marnie's Ranch", activity: "Feeding animals" },
+              { time: 900, location: "Ranch Shop Counter", activity: "Behind shop counter (Open!)" },
+              { time: 1600, location: "Ranch Living Room", activity: "Relaxing with Jas & Shane" },
+              { time: 2100, location: "Marnie's Bedroom", activity: "Going to bed" }
+            ]
+          };
+        }
+      },
+
+      lewis: {
+        id: "lewis",
+        name: "Lewis",
+        category: "townsfolk",
+        role: "Mayor",
+        tagColor: "bg-lime-800",
+        birthday: "Spring 7",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/2/2b/Lewis.png",
+        description: "The Mayor of Pelican Town for over twenty years. Collects your shipping bin every night at 2:00 AM and hosts town festivals.",
+        tags: ["Mayor", "Shipping Bin", "Festivals", "Purple Shorts"],
+        gifts: [
+          { item: "Autumn's Bounty", reaction: "Love", note: "Cooked meal (Yam + Pumpkin)" },
+          { item: "Hot Pepper", reaction: "Love", note: "Summer crop (fast & cheap!)" },
+          { item: "Glazed Yams & Vegetable Medley", reaction: "Love", note: "Cooked dishes" },
+          { item: "Green Tea", reaction: "Love", note: "Keg beverage from Tea Leaves" },
+          { item: "All Fruit & Milk", reaction: "Like", note: "Farm staples" },
+          { item: "Quartz", reaction: "Neutral", note: "Mineral" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Town Inspection & Evening Saloon",
+            timeline: [
+              { time: 600, location: "Mayor's Manor", activity: "Reviewing town ledger" },
+              { time: 1000, location: "Pierre's General Store", activity: "Checking town notices" },
+              { time: 1600, location: "The Stardrop Saloon", activity: "Drinking beer near fireplace" },
+              { time: 2300, location: "Mayor's Manor", activity: "Heading home" }
+            ]
+          };
+        }
+      },
+
+      caroline: {
+        id: "caroline",
+        name: "Caroline",
+        category: "townsfolk",
+        role: "Town resident",
+        tagColor: "bg-emerald-600",
+        birthday: "Winter 7",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/8/87/Caroline.png",
+        description: "Pierre's wife and Abigail's mother. Enjoys gardening, relaxes in her sunroom, and gives you the Tea Sapling recipe at 2 hearts.",
+        tags: ["Sunroom", "Tea Saplings", "Gardener", "Aerobics"],
+        gifts: [
+          { item: "Fish Taco", reaction: "Love", note: "Cooked meal" },
+          { item: "Green Tea", reaction: "Love", note: "Brewed Tea Leaves in a Keg" },
+          { item: "Summer Spangle", reaction: "Love", note: "Summer flower" },
+          { item: "Tropical Curry", reaction: "Love", note: "Island dish" },
+          { item: "Daffodil", reaction: "Like", note: "Spring flower" },
+          { item: "All Mayonnaise", reaction: "Hate", note: "HATES mayonnaise" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Sunroom & Town Square",
+            timeline: [
+              { time: 600, location: "Pierre's Store (Kitchen)", activity: "Making breakfast" },
+              { time: 900, location: "Private Sunroom", activity: "Meditating in sunroom" },
+              { time: 1200, location: "Town Square Fountain", activity: "Chatting with Jodi" },
+              { time: 1700, location: "Pierre's Living Room", activity: "Reading" }
+            ]
+          };
+        }
+      },
+
+      demetrius: {
+        id: "demetrius",
+        name: "Demetrius",
+        category: "townsfolk",
+        role: "Scientist",
+        tagColor: "bg-blue-800",
+        birthday: "Summer 19",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/f/f0/Demetrius.png",
+        description: "A local scientist studying Pelican Town's local ecosystem. Lives at 24 Mountain Road with his wife Robin, daughter Maru, and stepson Sebastian.",
+        tags: ["Scientist", "Mountain Lab", "Ecosystem", "Dancing"],
+        gifts: [
+          { item: "Bean Hotpot", reaction: "Love", note: "Cooked meal" },
+          { item: "Ice Cream", reaction: "Love", note: "Summer stand treat" },
+          { item: "Rice Pudding & Strawberry", reaction: "Love", note: "Spring berry & dessert" },
+          { item: "All Fruit & Purple Mushroom", reaction: "Like", note: "Botanical samples" },
+          { item: "Quartz", reaction: "Neutral", note: "Mineral" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (day === 'Friday') {
+            return {
+              routine: "Friday Saloon Dancing with Robin",
+              timeline: [
+                { time: 600, location: "Carpenter's Lab", activity: "Reviewing research" },
+                { time: 1600, location: "Walking to Saloon", activity: "Walking to town with Robin" },
+                { time: 1920, location: "The Stardrop Saloon", activity: "Dancing with Robin by jukebox" },
+                { time: 2240, location: "Carpenter's Shop", activity: "Returns home" }
+              ]
+            };
+          }
+          return {
+            routine: "Mountain Lake Research",
+            timeline: [
+              { time: 600, location: "Carpenter's Lab", activity: "Taking notes in lab" },
+              { time: 1100, location: "Mountain Lake Shore", activity: "Sampling lake water & fish" },
+              { time: 1900, location: "Carpenter's Shop", activity: "Home for dinner" }
+            ]
+          };
+        }
+      },
+
+      evelyn: {
+        id: "evelyn",
+        name: "Evelyn",
+        category: "townsfolk",
+        role: "Town resident",
+        tagColor: "bg-pink-700",
+        birthday: "Winter 20",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/8/8e/Evelyn.png",
+        description: "Alex's loving grandmother and George's wife. She tends the public flower gardens throughout Pelican Town and bakes delicious cookies.",
+        tags: ["Grandma", "Flower Garden", "Cookie Recipe", "Sweet"],
+        gifts: [
+          { item: "Beet & Chocolate Cake", reaction: "Love", note: "Fall crop & baked cake" },
+          { item: "Diamond", reaction: "Love", note: "Mined gem" },
+          { item: "Fairy Rose & Tulip", reaction: "Love", note: "Seasonal flowers" },
+          { item: "Stuffing", reaction: "Love", note: "Cooked meal" },
+          { item: "Daffodil", reaction: "Like", note: "Spring flower" },
+          { item: "All Garlic & Fried Eel", reaction: "Hate", note: "Pungent foods" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Tending Public Town Gardens",
+            timeline: [
+              { time: 600, location: "1 River Road", activity: "Waking up and baking" },
+              { time: 900, location: "Town Center Gardens", activity: "Tending flower boxes" },
+              { time: 1630, location: "1 River Road", activity: "Reading in living room" }
+            ]
+          };
+        }
+      },
+
+      george: {
+        id: "george",
+        name: "George",
+        category: "townsfolk",
+        role: "Town resident",
+        tagColor: "bg-zinc-700",
+        birthday: "Fall 24",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/2/2a/George.png",
+        description: "Alex's grandfather and Evelyn's husband. Though gruff on the surface due to being in a wheelchair, he has a big heart underneath.",
+        tags: ["Grandpa", "Wheelchair", "Loves Leeks", "TV Watcher"],
+        gifts: [
+          { item: "Fried Mushroom", reaction: "Love", note: "Cooked mushroom recipe" },
+          { item: "Leek", reaction: "Love", note: "Spring wild forage (His signature favorite!)" },
+          { item: "Daffodil", reaction: "Like", note: "Spring flower" },
+          { item: "All Flowers (Except Daffodil)", reaction: "Hate", note: "HATES flowers & bouquets" },
+          { item: "Clay", reaction: "Hate", note: "Raw dirt" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (day === 'Sunday') {
+            return {
+              routine: "Sunday Worship at Yoba Altar",
+              timeline: [
+                { time: 600, location: "1 River Road", activity: "Waking up" },
+                { time: 1030, location: "Pierre's Store (Yoba Altar)", activity: "Praying at altar room" },
+                { time: 1400, location: "1 River Road", activity: "Watching television in living room" }
+              ]
+            };
+          }
+          return {
+            routine: "Watching Television in Living Room",
+            timeline: [
+              { time: 600, location: "1 River Road", activity: "Sitting in front of TV" },
+              { time: 1200, location: "Outside 1 River Road", activity: "Sitting outside near river" },
+              { time: 1500, location: "1 River Road (Living Room)", activity: "Watching TV" },
+              { time: 2000, location: "1 River Road (Bedroom)", activity: "Sleeping" }
+            ]
+          };
+        }
+      },
+
+      jodi: {
+        id: "jodi",
+        name: "Jodi",
+        category: "townsfolk",
+        role: "Town resident",
+        tagColor: "bg-rose-700",
+        birthday: "Fall 11",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/4/41/Jodi.png",
+        description: "Sam and Vincent's mother, and Kent's wife. Manages a busy household and is best friends with Caroline.",
+        tags: ["Homemaker", "Busy Mom", "Aerobics", "Family Dinner"],
+        gifts: [
+          { item: "Chocolate Cake", reaction: "Love", note: "Cooked dessert" },
+          { item: "Crispy Bass & Diamond", reaction: "Love", note: "Seafood meal & mined gem" },
+          { item: "Eggplant Parmesan", reaction: "Love", note: "Cooked meal" },
+          { item: "Pancake & Vegetable Medley", reaction: "Love", note: "Breakfast & dinner" },
+          { item: "All Eggs & Fruit", reaction: "Like", note: "Farm staples" },
+          { item: "Daffodil", reaction: "Dislike", note: "Spring flower" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Household Chores & Town Shopping",
+            timeline: [
+              { time: 600, location: "1 Willow Lane (Kitchen)", activity: "Prepping food" },
+              { time: 900, location: "Pierre's General Store", activity: "Shopping and chatting" },
+              { time: 1400, location: "Town Square Fountain", activity: "Chatting with Caroline" },
+              { time: 1800, location: "1 Willow Lane", activity: "Cooking dinner for family" }
+            ]
+          };
+        }
+      },
+
+      kent: {
+        id: "kent",
+        name: "Kent",
+        category: "townsfolk",
+        role: "Veteran (Year 2+)",
+        tagColor: "bg-stone-800",
+        birthday: "Spring 4",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/9/9d/Kent.png",
+        description: "Jodi's husband and father to Sam and Vincent. Returns home from the war at the start of Year 2 and is readjusting to civilian life.",
+        tags: ["Veteran", "Year 2 Arrival", "Loves Roasted Hazelnuts"],
+        gifts: [
+          { item: "Fiddlehead Risotto", reaction: "Love", note: "Cooked meal" },
+          { item: "Roasted Hazelnuts", reaction: "Love", note: "Cooked Fall forage" },
+          { item: "All Eggs & Fruit", reaction: "Like", note: "Farm staples" },
+          { item: "Daffodil", reaction: "Like", note: "Spring flower" },
+          { item: "Sashimi", reaction: "Hate", note: "War trauma association" },
+          { item: "Algae Soup", reaction: "Hate", note: "Cave soup" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Cindersap Forest & Town Walks",
+            timeline: [
+              { time: 600, location: "1 Willow Lane", activity: "Waking up early" },
+              { time: 1030, location: "Town Square", activity: "Standing under big tree" },
+              { time: 1500, location: "Cindersap Forest River", activity: "Standing near river bridge" },
+              { time: 1900, location: "1 Willow Lane", activity: "Home with Jodi" }
+            ]
+          };
+        }
+      },
+
+      jas: {
+        id: "jas",
+        name: "Jas",
+        category: "townsfolk",
+        role: "Child",
+        tagColor: "bg-fuchsia-700",
+        birthday: "Summer 4",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/5/55/Jas.png",
+        description: "Marnie's niece. Best friends with Vincent and tutored by Penny. Loves skipping rope and playing with farm animals.",
+        tags: ["Child", "Jump Rope", "Penny's Student", "Marnie's Ranch"],
+        gifts: [
+          { item: "Fairy Rose", reaction: "Love", note: "Fall flower" },
+          { item: "Pink Cake", reaction: "Love", note: "Cooked pastry" },
+          { item: "Plum Pudding", reaction: "Love", note: "Cooked dessert" },
+          { item: "Coconut & Daffodil", reaction: "Like", note: "Forage" },
+          { item: "All Alcohol & Coffee", reaction: "Hate", note: "Adult drinks" },
+          { item: "All Mayonnaise", reaction: "Hate", note: "Hates mayonnaise" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (day === 'Tuesday' || day === 'Wednesday' || day === 'Friday') {
+            return {
+              routine: "School Tutoring with Penny",
+              timeline: [
+                { time: 600, location: "Marnie's Ranch", activity: "Waking up" },
+                { time: 900, location: "Walking to Museum", activity: "Walking with Penny" },
+                { time: 1000, location: "Museum Library", activity: "Studying lesson books" },
+                { time: 1400, location: "Town Square", activity: "Playing under tree" },
+                { time: 1800, location: "Marnie's Ranch", activity: "Home for dinner" }
+              ]
+            };
+          }
+          return {
+            routine: "Jumping Rope at Ranch",
+            timeline: [
+              { time: 600, location: "Marnie's Ranch", activity: "Waking up" },
+              { time: 1100, location: "Cindersap Forest (Big Tree)", activity: "Skipping rope by tree" },
+              { time: 1500, location: "Ranch Barn Yard", activity: "Looking at farm animals" },
+              { time: 1900, location: "Marnie's Ranch", activity: "Going to bed" }
+            ]
+          };
+        }
+      },
+
+      vincent: {
+        id: "vincent",
+        name: "Vincent",
+        category: "townsfolk",
+        role: "Child",
+        tagColor: "bg-amber-500",
+        birthday: "Spring 10",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/f/f1/Vincent.png",
+        description: "Jodi and Kent's youngest son. He idolizes his big brother Sam and loves searching the beach for bugs and snails.",
+        tags: ["Child", "Penny's Student", "Loves Snails", "Beach Bugs"],
+        gifts: [
+          { item: "Cranberry Candy", reaction: "Love", note: "Cooked sweets" },
+          { item: "Ginger Ale", reaction: "Love", note: "Island drink" },
+          { item: "Pink Cake", reaction: "Love", note: "Cooked cake" },
+          { item: "Snail", reaction: "Love", note: "Freshwater Crab Pot catch!" },
+          { item: "Daffodil & Clam", reaction: "Like", note: "Spring flower & beach shell" },
+          { item: "All Mayonnaise", reaction: "Hate", note: "Hates mayonnaise" },
+          { item: "All Coffee & Alcohol", reaction: "Hate", note: "Adult drinks" }
+        ],
+        getSchedule: function(season, day, weather) {
+          if (day === 'Tuesday' || day === 'Wednesday' || day === 'Friday') {
+            return {
+              routine: "School Tutoring with Penny",
+              timeline: [
+                { time: 600, location: "1 Willow Lane", activity: "Waking up" },
+                { time: 1000, location: "Museum Library", activity: "School lessons with Penny" },
+                { time: 1400, location: "Town Square", activity: "Playing near ice cream stand" },
+                { time: 1700, location: "1 Willow Lane", activity: "Returns home" }
+              ]
+            };
+          }
+          return {
+            routine: "Playground & Beach Shell Hunt",
+            timeline: [
+              { time: 600, location: "1 Willow Lane", activity: "Playing in bedroom" },
+              { time: 1000, location: "Town Playground", activity: "Playing on playground" },
+              { time: 1700, location: "1 Willow Lane", activity: "Dinner with family" }
+            ]
+          };
+        }
+      },
+
+      pam: {
+        id: "pam",
+        name: "Pam",
+        category: "townsfolk",
+        role: "Bus Driver",
+        tagColor: "bg-cyan-700",
+        birthday: "Spring 18",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/d/da/Pam.png",
+        description: "Penny's mother. Operates the Pelican Town bus once repaired by the Community Center Vault bundle, and spends nights at the Saloon.",
+        tags: ["Bus Driver", "Calico Desert", "Beer Lover", "Trailer"],
+        gifts: [
+          { item: "Beer & Pale Ale", reaction: "Love", note: "Saloon drinks" },
+          { item: "Cactus Fruit", reaction: "Love", note: "Desert forage" },
+          { item: "Glazed Yams", reaction: "Love", note: "Cooked sweet potato dish" },
+          { item: "Mead & Piña Colada", reaction: "Love", note: "Artisan & island drinks" },
+          { item: "Parsnip & Parsnip Soup", reaction: "Love", note: "Spring crop & soup" },
+          { item: "Daffodil", reaction: "Like", note: "Spring flower" },
+          { item: "Quartz", reaction: "Hate", note: "Hates minerals & raw stones" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Bus Stop to Desert (10:10am - 5:00pm)",
+            timeline: [
+              { time: 600, location: "The Trailer", activity: "Waking up" },
+              { time: 830, location: "Walking to Bus Stop", activity: "Walking past farm to bus" },
+              { time: 1010, location: "The Bus Stop", activity: "Driving bus to Calico Desert (Open!)" },
+              { time: 1700, location: "Walking to Saloon", activity: "Heading to town" },
+              { time: 1800, location: "The Stardrop Saloon", activity: "Drinking at bar" },
+              { time: 2400, location: "The Trailer", activity: "Heads home to bed" }
+            ]
+          };
+        }
+      },
+
+      sandy: {
+        id: "sandy",
+        name: "Sandy",
+        category: "townsfolk",
+        role: "Oasis Shopkeeper",
+        tagColor: "bg-pink-500",
+        birthday: "Fall 15",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/4/4e/Sandy.png",
+        description: "Emily's friend who runs the Oasis shop in Calico Desert. Sells unique seeds like Starfruit, Beet, and Rhubarb.",
+        tags: ["The Oasis", "Calico Desert", "Starfruit Seeds", "Desert Shop"],
+        shopHours: {
+          hours: "9:00 AM - 11:50 PM",
+          days: "Every day (Unlocked after fixing Bus via Vault Bundle)",
+          note: "Sells Starfruit seeds, Rhubarb seeds, Beet seeds, and rotates daily specialty items."
+        },
+        gifts: [
+          { item: "Crocus, Daffodil, Sweet Pea", reaction: "Love", note: "Foraged flowers!" },
+          { item: "Mango Sticky Rice", reaction: "Love", note: "Island dessert" },
+          { item: "All Quartz & Earth Crystals", reaction: "Like", note: "Gems & minerals" },
+          { item: "All Other Flowers", reaction: "Like", note: "Tulip, Blue Jazz, Spangle" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Behind The Oasis Counter in Desert",
+            timeline: [
+              { time: 600, location: "The Oasis (Desert)", activity: "Prepping shop inventory" },
+              { time: 900, location: "The Oasis Counter", activity: "Behind shop counter (Open!)" },
+              { time: 2400, location: "The Oasis", activity: "Closes shop" }
+            ]
+          };
+        }
+      },
+
+      wizard: {
+        id: "wizard",
+        name: "Wizard (M. Rasmodius)",
+        category: "townsfolk",
+        role: "Tower Mage & Shopkeeper",
+        tagColor: "bg-indigo-900",
+        birthday: "Winter 17",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/c/c7/Wizard.png",
+        description: "The enigmatic arcane master of Pelican Town. Lives in the stone tower in western Cindersap Forest. Unlocks magical farm buildings.",
+        tags: ["Wizard Tower", "Magic", "Junimo Huts", "Obelisks"],
+        shopHours: {
+          hours: "6:00 AM - 11:00 PM",
+          days: "Every day",
+          note: "Once magic ink quest is done: builds Junimo Huts, Earth/Water/Desert/Island Obelisks, and Golden Clock."
+        },
+        gifts: [
+          { item: "Purple Mushroom", reaction: "Love", note: "Cave mushroom" },
+          { item: "Solar Essence & Void Essence", reaction: "Love", note: "Monster loot drops" },
+          { item: "Super Cucumber", reaction: "Love", note: "Summer/Fall ocean catch" },
+          { item: "All Gems & Minerals", reaction: "Like", note: "Amethyst, Emerald, Quartz" },
+          { item: "All Other Mushrooms", reaction: "Like", note: "Red Mushroom, Chanterelle" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Inside Wizard Tower Study",
+            timeline: [
+              { time: 600, location: "Wizard's Tower", activity: "Studying arcane tomes" },
+              { time: 1200, location: "Wizard's Tower Cauldron", activity: "Brewing mystic potions" },
+              { time: 2300, location: "Wizard's Tower", activity: "Resting" }
+            ]
+          };
+        }
+      },
+
+      krobus: {
+        id: "krobus",
+        name: "Krobus",
+        category: "townsfolk",
+        role: "Sewer Merchant & Roommate",
+        tagColor: "bg-neutral-900",
+        birthday: "Winter 1",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/7/71/Krobus.png",
+        description: "The friendly shadow monster who lives in the Sewers. Sells rare items (Iridium Sprinklers, Void Eggs, Stardrop) and can become your roommate!",
+        tags: ["The Sewers", "Roommate", "Shadow Monster", "Iridium Sprinkler"],
+        shopHours: {
+          hours: "All Day / Night (24/7 once Sewers unlocked)",
+          days: "Open 7 Days a week",
+          note: "Sells 1 Iridium Sprinkler every Friday (10,000g), Void Eggs, Solar/Void Essence, and a Stardrop."
+        },
+        gifts: [
+          { item: "Diamond", reaction: "Love", note: "Mined gem" },
+          { item: "Iridium Bar", reaction: "Love", note: "Smelted metal" },
+          { item: "Pumpkin", reaction: "Love", note: "Fall crop" },
+          { item: "Void Egg & Void Mayonnaise", reaction: "Love", note: "Shadow monster foods" },
+          { item: "Wild Horseradish", reaction: "Love", note: "Spring wild root" },
+          { item: "Gold Bar", reaction: "Like", note: "Smelted metal" },
+          { item: "Quartz", reaction: "Like", note: "Cave mineral" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Standing at Sewer Shop Counter",
+            timeline: [
+              { time: 600, location: "The Sewers", activity: "At sewer shop counter (Open 24/7!)" }
+            ]
+          };
+        }
+      },
+
+      dwarf: {
+        id: "dwarf",
+        name: "Dwarf",
+        category: "townsfolk",
+        role: "Mines Merchant",
+        tagColor: "bg-amber-900",
+        birthday: "Summer 22",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/d/d4/Dwarf.png",
+        description: "Lives in the cave entrance to the Mines (behind the breakable rock on the right). Speak with him once you donate all 4 Dwarvish Scrolls to Gunther.",
+        tags: ["The Mines", "Dwarvish Scrolls", "Mega Bombs", "Miner"],
+        shopHours: {
+          hours: "All Day / Night (Once rock broken and scrolls donated)",
+          days: "Open 7 Days a week",
+          note: "Sells Mega Bombs, Cherry Bombs, Regular Bombs, Life Elixirs, and Miner's Treats."
+        },
+        gifts: [
+          { item: "Amethyst, Aquamarine, Emerald, Jade, Ruby, Topaz", reaction: "Love", note: "ALL gems!" },
+          { item: "Lemon Stone & Omni Geode", reaction: "Love", note: "Geode minerals" },
+          { item: "Cave Carrot", reaction: "Like", note: "Cave forage" },
+          { item: "Quartz", reaction: "Like", note: "Mined mineral" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Standing in Mine Entrance Chamber",
+            timeline: [
+              { time: 600, location: "The Mines Entrance", activity: "Behind counter in cave" }
+            ]
+          };
+        }
+      },
+
+      leo: {
+        id: "leo",
+        name: "Leo",
+        category: "townsfolk",
+        role: "Island Boy",
+        tagColor: "bg-amber-700",
+        birthday: "Summer 26",
+        portrait: "https://stardewvalleywiki.com/mediawiki/images/1/1d/Leo.png",
+        description: "A lonely boy raised by parrots on Ginger Island. As your friendship deepens with Golden Walnuts, he moves to a treehouse in the Mountain above Pelican Town.",
+        tags: ["Ginger Island", "Parrots", "Golden Walnuts", "Treehouse"],
+        gifts: [
+          { item: "Duck Feather", reaction: "Love", note: "Deluxe Coop produce" },
+          { item: "Mango", reaction: "Love", note: "Island tree fruit" },
+          { item: "Ostrich Egg", reaction: "Love", note: "Ginger Island farm bird" },
+          { item: "Poi", reaction: "Love", note: "Cooked taro recipe" },
+          { item: "Dragon Tooth", reaction: "Like", note: "Volcano dungeon drop" },
+          { item: "Quartz", reaction: "Like", note: "Cave mineral" },
+          { item: "All Beer & Wine", reaction: "Hate", note: "Hates alcohol" }
+        ],
+        getSchedule: function(season, day, weather) {
+          return {
+            routine: "Ginger Island Hut / Mountain Treehouse",
+            timeline: [
+              { time: 600, location: "Island Hut / Treehouse", activity: "Waking up with bird family" },
+              { time: 1000, location: "Island Beach / Mountain Trail", activity: "Watching wild birds" },
+              { time: 1800, location: "Hut / Treehouse", activity: "Sleeping" }
+            ]
+          };
+        }
+      }
+    };
+
+    let currentVillager = null;
+    let activeGiftFilter = 'all';
+    let activeCatalogFilter = 'all';
+    let activeCategoryFilter = 'all';
+
+    function setSafeHash(hash) {
+      try {
+        if (hash) {
+          if (window.location.hash !== '#' + hash) {
+            window.history.pushState({ villager: hash }, '', '#' + hash);
+          }
+        } else {
+          if (window.location.hash) {
+            window.history.pushState(null, '', window.location.pathname);
+          }
+        }
+      } catch (err) {}
+    }
+
+    // Render 3-Column Villager Grid
+    window.renderGrid = function() {
+      const grid = document.getElementById('villager-grid');
+      grid.innerHTML = '';
+
+      const query = (document.getElementById('villager-search')?.value || '').toLowerCase().trim();
+
+      const villagerKeys = Object.keys(VILLAGERS);
+
+      villagerKeys.forEach(id => {
+        const v = VILLAGERS[id];
+
+        // Filter Category
+        if (activeCategoryFilter === 'bachelor' && v.category !== 'bachelor') return;
+        if (activeCategoryFilter === 'bachelorette' && v.category !== 'bachelorette') return;
+        if (activeCategoryFilter === 'townsfolk' && v.category !== 'townsfolk') return;
+        if (activeCategoryFilter === 'shop' && !v.shopHours) return;
+
+        // Filter Search Query
+        if (query) {
+          const matchName = v.name.toLowerCase().includes(query);
+          const matchGift = v.gifts.some(g => g.item.toLowerCase().includes(query) && (g.reaction === 'Love' || g.reaction === 'Like'));
+          const matchTag = v.tags.some(t => t.toLowerCase().includes(query));
+          if (!matchName && !matchGift && !matchTag) return;
+        }
+
+        const card = document.createElement('button');
+        card.onclick = () => window.openVillagerDetail(v.id);
+        card.className = "wood-card p-2.5 sm:p-3 text-center group hover:-translate-y-1 hover:shadow-xl transition-all duration-200 cursor-pointer flex flex-col items-center justify-between";
+
+        card.innerHTML = `
+          <div class="w-full flex flex-col items-center">
+            <div class="relative mb-2">
+              <img 
+                src="${v.portrait}" 
+                alt="${v.name}" 
+                class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-amber-950/70 bg-amber-100 object-cover shadow group-hover:scale-105 transition-transform"
+                onerror="this.onerror=null; this.src='https://placehold.co/110x110/8e4f1f/fedc97?text=${v.name}'"
+              >
+              <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 text-[8px] sm:text-[9px] px-1.5 py-0.5 rounded-full font-black uppercase text-white shadow ${v.tagColor} whitespace-nowrap">
+                ${v.role.split(' ')[0]}
+              </span>
+            </div>
+            <h3 class="stardew-font text-sm sm:text-base font-black text-amber-950 group-hover:text-amber-700 transition-colors leading-tight mt-1">
+              ${v.name}
+            </h3>
+          </div>
+          <div class="mt-2 w-full flex flex-col gap-1">
+            <div class="py-0.5 bg-amber-950/10 rounded text-[10px] sm:text-[11px] font-bold text-amber-900">
+              🎂 ${v.birthday}
+            </div>
+            ${v.shopHours ? '<span class="text-[9px] bg-emerald-800 text-white rounded font-bold py-0.5">🏪 Shop</span>' : ''}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    };
+
+    window.filterDirectory = function() {
+      window.renderGrid();
+    };
+
+    window.setCategoryFilter = function(cat) {
+      activeCategoryFilter = cat;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = "cat-pill px-2.5 py-1 rounded-lg font-black bg-[#5a2c0c] text-white shadow-sm";
+        } else {
+          btn.className = "cat-pill px-2.5 py-1 rounded-lg font-bold bg-amber-200/90 text-amber-950";
+        }
+      });
+      window.renderGrid();
+    };
+
+    // Open Villager Detail Profile View
+    window.openVillagerDetail = function(id) {
+      currentVillager = VILLAGERS[id];
+      if (!currentVillager) return;
+
+      setSafeHash(id);
+
+      const gridView = document.getElementById('grid-view');
+      const detailView = document.getElementById('detail-view');
+      const topNav = document.getElementById('top-nav');
+      const navTitle = document.getElementById('nav-villager-title');
+      const navCatalogBtn = document.getElementById('nav-catalog-btn');
+
+      gridView.classList.add('hidden');
+      detailView.classList.remove('hidden');
+
+      if (topNav) topNav.classList.remove('hidden');
+      if (navTitle) navTitle.innerText = currentVillager.name;
+      if (navCatalogBtn) {
+        if (currentVillager.id === 'robin') {
+          navCatalogBtn.classList.remove('hidden');
+        } else {
+          navCatalogBtn.classList.add('hidden');
+        }
+      }
+
+      // Populate Bio
+      document.getElementById('detail-portrait').src = currentVillager.portrait;
+      document.getElementById('detail-name').innerText = currentVillager.name;
+      document.getElementById('detail-birthday').innerText = currentVillager.birthday;
+      document.getElementById('detail-desc').innerText = currentVillager.description;
+
+      const tagEl = document.getElementById('detail-tag');
+      tagEl.innerText = currentVillager.role;
+      tagEl.className = `absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow whitespace-nowrap ${currentVillager.tagColor}`;
+
+      // Tags
+      const tagsContainer = document.getElementById('detail-tags');
+      tagsContainer.innerHTML = '';
+      currentVillager.tags.forEach(t => {
+        const span = document.createElement('span');
+        span.className = "text-[11px] font-bold px-2 py-0.5 rounded bg-amber-950/15 text-amber-950 border border-amber-900/20";
+        span.innerText = `#${t}`;
+        tagsContainer.appendChild(span);
+      });
+
+      // Robin Catalog Shortcut Button
+      const robinBtn = document.getElementById('robin-catalog-shortcut');
+      if (currentVillager.id === 'robin') {
+        robinBtn.classList.remove('hidden');
+      } else {
+        robinBtn.classList.add('hidden');
+      }
+
+      // Shop Hours Card
+      const shopCard = document.getElementById('shop-hours-card');
+      if (currentVillager.shopHours) {
+        shopCard.classList.remove('hidden');
+        document.getElementById('shop-hours-time').innerText = currentVillager.shopHours.hours;
+        document.getElementById('shop-hours-days').innerText = currentVillager.shopHours.days;
+        document.getElementById('shop-hours-note').innerText = currentVillager.shopHours.note;
+      } else {
+        shopCard.classList.add('hidden');
+      }
+
+      activeGiftFilter = 'all';
+      window.renderGiftTable();
+      window.updateScheduleResult();
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Return to Grid View
+    window.showGridView = function() {
+      setSafeHash('');
+
+      const gridView = document.getElementById('grid-view');
+      const detailView = document.getElementById('detail-view');
+      const topNav = document.getElementById('top-nav');
+
+      detailView.classList.add('hidden');
+      gridView.classList.remove('hidden');
+      if (topNav) topNav.classList.add('hidden');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.addEventListener('popstate', function() {
+      try {
+        const hash = window.location.hash.replace('#', '');
+        if (hash && VILLAGERS[hash]) {
+          window.openVillagerDetail(hash);
+        } else {
+          window.showGridView();
+        }
+      } catch (e) {}
+    });
+
+    function formatGameTime(num) {
+      const hours24 = Math.floor(num / 100);
+      const minutes = (num % 100).toString().padStart(2, '0');
+      const suffix = hours24 >= 12 && hours24 < 24 ? 'PM' : 'AM';
+      let hours12 = hours24 % 12;
+      if (hours12 === 0) hours12 = 12;
+      return `${hours12}:${minutes} ${suffix}`;
+    }
+
+    window.updateScheduleResult = function() {
+      if (!currentVillager) return;
+
+      const season = document.getElementById('schedule-season').value;
+      const day = document.getElementById('schedule-day').value;
+      const weather = document.getElementById('schedule-weather').value;
+      const time = parseInt(document.getElementById('schedule-time').value, 10);
+
+      const scheduleData = currentVillager.getSchedule(season, day, weather);
+
+      let activeIndex = 0;
+      for (let i = 0; i < scheduleData.timeline.length; i++) {
+        if (time >= scheduleData.timeline[i].time) {
+          activeIndex = i;
+        }
+      }
+
+      const activeEvent = scheduleData.timeline[activeIndex];
+      document.getElementById('schedule-location').innerText = activeEvent.location;
+      document.getElementById('schedule-activity').innerText = activeEvent.activity;
+      document.getElementById('schedule-routine-tag').innerText = scheduleData.routine;
+
+      const timelineContainer = document.getElementById('schedule-timeline');
+      timelineContainer.innerHTML = '';
+
+      scheduleData.timeline.forEach((step, idx) => {
+        const isCurrent = idx === activeIndex;
+        const timeStr = formatGameTime(step.time);
+
+        const row = document.createElement('div');
+        row.className = `p-2 rounded-lg flex items-center justify-between border transition-all ${
+          isCurrent 
+            ? 'bg-[#5a2c0c] text-amber-100 border-[#381602] font-black shadow-md' 
+            : 'bg-amber-100/70 text-amber-950 border-amber-900/10 font-medium'
+        }`;
+
+        row.innerHTML = `
+          <div class="flex items-center gap-2 overflow-hidden">
+            <span class="w-16 font-black shrink-0 ${isCurrent ? 'text-amber-200' : 'text-amber-900'}">${timeStr}</span>
+            <span class="truncate">${step.location}</span>
+          </div>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="text-[11px] opacity-75 italic hidden sm:inline max-w-xs truncate">${step.activity}</span>
+            ${isCurrent ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-400 text-amber-950 uppercase font-black tracking-wider">Here Now</span>' : ''}
+          </div>
+        `;
+        timelineContainer.appendChild(row);
+      });
+    };
+
+    window.renderGiftTable = function() {
+      if (!currentVillager) return;
+      const tbody = document.getElementById('gift-table-body');
+      tbody.innerHTML = '';
+
+      const tierMeta = {
+        Love: { title: 'Loved Gifts (+80 pts)', badge: 'badge-love', bg: 'bg-rose-500/15 text-rose-950' },
+        Like: { title: 'Liked Gifts (+45 pts)', badge: 'badge-like', bg: 'bg-emerald-500/15 text-emerald-950' },
+        Neutral: { title: 'Neutral Gifts (+20 pts)', badge: 'badge-neutral', bg: 'bg-slate-500/15 text-slate-950' },
+        Dislike: { title: 'Disliked Gifts (-20 pts)', badge: 'badge-dislike', bg: 'bg-orange-500/15 text-orange-950' },
+        Hate: { title: 'Hated Gifts (-40 pts)', badge: 'badge-hate', bg: 'bg-zinc-700/15 text-zinc-950' }
+      };
+
+      const pointsMap = { Love: 80, Like: 45, Neutral: 20, Dislike: -20, Hate: -40 };
+      const order = ['Love', 'Like', 'Neutral', 'Dislike', 'Hate'];
+      const tiers = activeGiftFilter === 'all' ? order : [activeGiftFilter];
+
+      tiers.forEach(tier => {
+        const items = currentVillager.gifts.filter(g => g.reaction === tier);
+        if (items.length === 0) return;
+
+        // Group Header
+        const header = document.createElement('tr');
+        header.className = `${tierMeta[tier].bg} border-y font-black`;
+        header.innerHTML = `
+          <td colspan="7" class="px-3 py-1.5 uppercase text-[10px] tracking-wider">
+            ${tierMeta[tier].title}
+          </td>
+        `;
+        tbody.appendChild(header);
+
+        items.forEach(g => {
+          const base = pointsMap[g.reaction];
+          const silver = base > 0 ? Math.floor(base * 1.1) : base;
+          const gold = base > 0 ? Math.floor(base * 1.25) : base;
+          const iridium = base > 0 ? Math.floor(base * 1.5) : base;
+          const bday = base * 8;
+
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-amber-100/60 transition-colors";
+          tr.innerHTML = `
+            <td class="p-2 sm:p-2.5">
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase ${tierMeta[g.reaction].badge}">
+                ${g.reaction}
+              </span>
+            </td>
+            <td class="p-2 sm:p-2.5">
+              <div class="font-bold text-amber-950 text-xs sm:text-sm">${g.item}</div>
+              <div class="text-[10px] text-amber-900/70">${g.note}</div>
+            </td>
+            <td class="p-2 sm:p-2.5 text-center font-bold ${base >= 0 ? 'text-emerald-800' : 'text-rose-800'}">
+              ${base > 0 ? '+' + base : base}
+            </td>
+            <td class="p-2 sm:p-2.5 text-center hidden sm:table-cell font-semibold text-amber-950">
+              ${silver > 0 ? '+' + silver : silver}
+            </td>
+            <td class="p-2 sm:p-2.5 text-center hidden sm:table-cell font-semibold text-amber-950">
+              ${gold > 0 ? '+' + gold : gold}
+            </td>
+            <td class="p-2 sm:p-2.5 text-center font-black ${iridium >= 0 ? 'text-purple-800' : 'text-rose-900'}">
+              ${iridium > 0 ? '+' + iridium : iridium}
+            </td>
+            <td class="p-2 sm:p-2.5 text-center font-black ${bday >= 0 ? 'text-rose-600' : 'text-zinc-700'}">
+              ${bday > 0 ? '+' + bday : bday}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    };
+
+    window.filterGifts = function(tier) {
+      activeGiftFilter = tier;
+      document.querySelectorAll('.gift-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-tier') === tier) {
+          btn.className = "gift-filter-btn px-2 py-0.5 text-xs rounded font-black bg-[#5a2c0c] text-white shadow-sm";
+        } else {
+          btn.className = "gift-filter-btn px-2 py-0.5 text-xs rounded font-bold bg-amber-200/80 text-amber-950 hover:bg-amber-300";
+        }
+      });
+      window.renderGiftTable();
+    };
+
+    window.openRobinCatalog = function() {
+      const modal = document.getElementById('robin-catalog-modal');
+      modal.classList.remove('hidden-modal');
+      modal.classList.add('visible-modal');
+      window.renderRobinCatalog();
+    };
+
+    window.closeRobinCatalog = function() {
+      const modal = document.getElementById('robin-catalog-modal');
+      modal.classList.remove('visible-modal');
+      modal.classList.add('hidden-modal');
+    };
+
+    window.filterCatalog = function(cat) {
+      activeCatalogFilter = cat;
+      document.querySelectorAll('.catalog-pill').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.className = "catalog-pill px-2.5 py-1 rounded-lg font-black bg-[#5a2c0c] text-white";
+        } else {
+          btn.className = "catalog-pill px-2.5 py-1 rounded-lg font-bold bg-amber-100 text-amber-950";
+        }
+      });
+      window.renderRobinCatalog();
+    };
+
+    window.renderRobinCatalog = function() {
+      const list = document.getElementById('catalog-list');
+      list.innerHTML = '';
+
+      const items = activeCatalogFilter === 'all' 
+        ? ROBIN_CATALOG 
+        : ROBIN_CATALOG.filter(item => item.category === activeCatalogFilter);
+
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "p-3 rounded-xl bg-amber-100/70 border border-amber-900/20";
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2 mb-1.5">
+            <div class="flex items-center gap-2">
+              <span class="text-xl p-1.5 bg-amber-200/80 rounded-lg shadow-sm">${item.icon}</span>
+              <div>
+                <h4 class="font-black text-amber-950 text-sm sm:text-base leading-tight">${item.name}</h4>
+                <span class="text-[10px] text-amber-900/70 font-bold">${item.footprint}</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="inline-block px-2 py-0.5 rounded-lg bg-amber-950 text-amber-100 font-black text-xs shadow-sm">
+                💰 ${item.cost}
+              </span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-amber-950 mt-2">
+            <div class="bg-amber-50/80 p-2 rounded-lg border border-amber-900/10">
+              <span class="font-black text-[10px] uppercase text-amber-900/70 block">Required Materials</span>
+              <span class="font-bold">${item.materials}</span>
+            </div>
+            <div class="bg-amber-50/80 p-2 rounded-lg border border-amber-900/10">
+              <span class="font-black text-[10px] uppercase text-amber-900/70 block">Build Time</span>
+              <span class="font-bold">⏱️ ${item.buildTime}</span>
+            </div>
+          </div>
+
+          <div class="mt-2 text-xs text-amber-900/90 font-medium">
+            <span class="font-bold text-amber-950">Features:</span> ${item.perks}
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    };
+
+    // Initialize state on window load
+    window.addEventListener('load', function() {
+      window.renderGrid();
+      try {
+        const hash = window.location.hash.replace('#', '');
+        if (hash && VILLAGERS[hash]) {
+          window.openVillagerDetail(hash);
+        }
+      } catch(e) {}
+    });
+  </script>
+</body>
+</html>
